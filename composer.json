@@ -1,0 +1,18 @@
+{
+    "name": "diffyne/diffyne",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Diffyne\\Diffyne\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "xentixar",
+            "email": "xentixar@gmail.com",
+            "role": "Software Engineer"
+        }
+    ],
+    "require": {}
+}
