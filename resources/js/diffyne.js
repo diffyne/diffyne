@@ -131,9 +131,15 @@ class Diffyne {
         // Model binding (delegated on input/change)
         wrapper.addEventListener('input', (e) => {
             const target = e.target;
-            if (target.hasAttribute('diffyne:model')) {
-                const property = target.getAttribute('diffyne:model');
-                const modifiers = this.parseModifiers(property);
+            
+            // Find the diffyne:model attribute (could be diffyne:model, diffyne:model.live, etc.)
+            const modelAttr = Array.from(target.attributes).find(attr => 
+                attr.name === 'diffyne:model' || attr.name.startsWith('diffyne:model.')
+            );
+            
+            if (modelAttr) {
+                const property = target.getAttribute(modelAttr.name);
+                const modifiers = this.parseModifiers(modelAttr.name, property);
                 
                 // Only send requests if .live modifier is present
                 if (modifiers.live) {
@@ -158,9 +164,14 @@ class Diffyne {
 
         wrapper.addEventListener('change', (e) => {
             const target = e.target;
-            if (target.hasAttribute('diffyne:model')) {
-                const property = target.getAttribute('diffyne:model');
-                const modifiers = this.parseModifiers(property);
+            
+            const modelAttr = Array.from(target.attributes).find(attr => 
+                attr.name === 'diffyne:model' || attr.name.startsWith('diffyne:model.')
+            );
+            
+            if (modelAttr) {
+                const property = target.getAttribute(modelAttr.name);
+                const modifiers = this.parseModifiers(modelAttr.name, property);
                 
                 // For lazy updates or select/checkbox/radio
                 if (modifiers.lazy || target.tagName === 'SELECT' || target.type === 'checkbox' || target.type === 'radio') {
@@ -197,13 +208,16 @@ class Diffyne {
     }
 
     /**
-     * Parse modifiers from directive (e.g., "search.live.debounce.300ms")
+     * Parse modifiers from directive
+     * @param {string} attrName - The attribute name (e.g., "diffyne:model.live.debounce.500")
+     * @param {string} property - The property name from attribute value (e.g., "user.name")
      */
-    parseModifiers(directive) {
-        const parts = directive.split('.');
-        const property = parts[0];
+    parseModifiers(attrName, property) {
+        // Parse modifiers from attribute name (e.g., diffyne:model.live.debounce.500)
+        const parts = attrName.split('.');
+        
         const mods = {
-            property,
+            property: property, // Use the attribute value as the property name
             live: parts.includes('live'),
             lazy: parts.includes('lazy'),
             debounce: null
@@ -581,9 +595,21 @@ class Diffyne {
      * Sync model-bound input values with component state
      */
     syncModelInputs(element, state) {
-        element.querySelectorAll('[diffyne\\:model]').forEach(input => {
-            const property = input.getAttribute('diffyne:model');
-            const modifiers = this.parseModifiers(property);
+        const modelInputs = Array.from(element.querySelectorAll('*')).filter(el => {
+            return Array.from(el.attributes).some(attr => 
+                attr.name === 'diffyne:model' || attr.name.startsWith('diffyne:model.')
+            );
+        });
+        
+        modelInputs.forEach(input => {
+            const modelAttr = Array.from(input.attributes).find(attr => 
+                attr.name === 'diffyne:model' || attr.name.startsWith('diffyne:model.')
+            );
+            
+            if (!modelAttr) return;
+            
+            const property = input.getAttribute(modelAttr.name);
+            const modifiers = this.parseModifiers(modelAttr.name, property);
             const propertyName = modifiers.property;
             
             if (state.hasOwnProperty(propertyName)) {
@@ -847,14 +873,51 @@ class Diffyne {
 
     /**
      * Show loading state
+     * Supports modifiers:
+     * - diffyne:loading (default: opacity + pointer-events)
+     * - diffyne:loading.class.{className} (add class)
+     * - diffyne:loading.remove.{className} (remove class)
+     * - diffyne:loading.attr.{attrName} (set attribute to empty string)
+     * - diffyne:loading.attr.{attrName}.{value} (set attribute with value)
      */
     showLoading(element) {
-        element.querySelectorAll('[diffyne\\:loading]').forEach(el => {
-            const directive = el.getAttribute('diffyne:loading');
+        const loadingElements = Array.from(element.querySelectorAll('*')).filter(el => {
+            return Array.from(el.attributes).some(attr => attr.name.startsWith('diffyne:loading'));
+        });
+        
+        loadingElements.forEach(el => {
+            const loadingAttr = Array.from(el.attributes).find(attr => attr.name.startsWith('diffyne:loading'));
+            if (!loadingAttr) return;
             
-            if (directive.includes('class')) {
-                const className = directive.split('.').pop();
-                el.classList.add(className);
+            const directive = loadingAttr.value;
+            const attrName = loadingAttr.name;
+            const parts = attrName.split('.');
+            
+            if (parts.includes('class')) {
+                const classIndex = parts.indexOf('class');
+                if (parts[classIndex + 1]) {
+                    el.classList.add(parts[classIndex + 1]);
+                }
+            } else if (parts.includes('remove')) {
+                const removeIndex = parts.indexOf('remove');
+                if (parts[removeIndex + 1]) {
+                    el.classList.remove(parts[removeIndex + 1]);
+                }
+            } else if (parts.includes('attr')) {
+                const attrIndex = parts.indexOf('attr');
+                if (parts[attrIndex + 1]) {
+                    const attrName = parts[attrIndex + 1];
+                    const attrValue = parts[attrIndex + 2] || '';
+                    
+                    if (!el.hasAttribute('data-diffyne-loading-original-' + attrName)) {
+                        const originalValue = el.getAttribute(attrName);
+                        if (originalValue !== null) {
+                            el.setAttribute('data-diffyne-loading-original-' + attrName, originalValue);
+                        }
+                    }
+                    
+                    el.setAttribute(attrName, attrValue);
+                }
             } else {
                 el.style.opacity = '0.5';
                 el.style.pointerEvents = 'none';
@@ -866,12 +929,42 @@ class Diffyne {
      * Hide loading state
      */
     hideLoading(element) {
-        element.querySelectorAll('[diffyne\\:loading]').forEach(el => {
-            const directive = el.getAttribute('diffyne:loading');
+        const loadingElements = Array.from(element.querySelectorAll('*')).filter(el => {
+            return Array.from(el.attributes).some(attr => attr.name.startsWith('diffyne:loading'));
+        });
+        
+        loadingElements.forEach(el => {
+            const loadingAttr = Array.from(el.attributes).find(attr => attr.name.startsWith('diffyne:loading'));
+            if (!loadingAttr) return;
             
-            if (directive.includes('class')) {
-                const className = directive.split('.').pop();
-                el.classList.remove(className);
+            const directive = loadingAttr.value;
+            const attrName = loadingAttr.name;
+            const parts = attrName.split('.');
+            
+            if (parts.includes('class')) {
+                const classIndex = parts.indexOf('class');
+                if (parts[classIndex + 1]) {
+                    el.classList.remove(parts[classIndex + 1]);
+                }
+            } else if (parts.includes('remove')) {
+                const removeIndex = parts.indexOf('remove');
+                if (parts[removeIndex + 1]) {
+                    el.classList.add(parts[removeIndex + 1]);
+                }
+            } else if (parts.includes('attr')) {
+                const attrIndex = parts.indexOf('attr');
+                if (parts[attrIndex + 1]) {
+                    const attrName = parts[attrIndex + 1];
+                    const originalAttr = 'data-diffyne-loading-original-' + attrName;
+                    
+                    if (el.hasAttribute(originalAttr)) {
+                        const originalValue = el.getAttribute(originalAttr);
+                        el.setAttribute(attrName, originalValue);
+                        el.removeAttribute(originalAttr);
+                    } else {
+                        el.removeAttribute(attrName);
+                    }
+                }
             } else {
                 el.style.opacity = '';
                 el.style.pointerEvents = '';

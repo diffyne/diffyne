@@ -7,26 +7,32 @@ Show visual feedback during server requests with `diffyne:loading`.
 ### Add Class During Loading
 
 ```blade
-<button 
-    diffyne:click="save"
-    diffyne:loading.class.opacity-50>
+<button diffyne:loading.class.opacity-50>
     Save
 </button>
 ```
 
 When the button is clicked, `opacity-50` class is added until the server responds.
 
-### Multiple Classes
+### Remove Class During Loading
 
 ```blade
-<button 
-    diffyne:click="delete"
-    diffyne:loading.class.opacity-50.cursor-not-allowed>
-    Delete
+<span diffyne:loading.remove.hidden class="hidden">
+    <svg class="animate-spin">...</svg>
+</span>
+```
+
+Perfect for showing hidden elements during loading - the `hidden` class is removed when loading starts.
+
+### Set Attribute During Loading
+
+```blade
+<button diffyne:loading.attr.disabled>
+    Submit
 </button>
 ```
 
-Chain multiple classes by adding more `.class` segments.
+Sets the `disabled` attribute on the button during loading, preventing duplicate submissions.
 
 ### Default Loading Behavior
 
@@ -37,7 +43,7 @@ Chain multiple classes by adding more `.class` segments.
 </button>
 ```
 
-Without `.class` modifier, elements with `diffyne:loading` get default styles: `opacity: 0.5` and `pointer-events: none`.
+Without modifiers, elements with `diffyne:loading` get default styles: `opacity: 0.5` and `pointer-events: none`.
 
 ## Common Patterns
 
@@ -46,18 +52,17 @@ Without `.class` modifier, elements with `diffyne:loading` get default styles: `
 ```blade
 <button 
     diffyne:click="save"
-    diffyne:loading.class.opacity-50.cursor-not-allowed
-    class="bg-blue-500 text-white px-4 py-2 rounded">
-    Save
-    <span diffyne:loading class="flex items-center">
-        <svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+    diffyne:loading.attr.disabled
+    class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+    <span diffyne:loading.remove.hidden class="hidden mr-2">
+        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" 
                     stroke="currentColor" stroke-width="4" fill="none"></circle>
             <path class="opacity-75" fill="currentColor" 
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        Saving...
     </span>
+    Save
 </button>
 ```
 
@@ -70,8 +75,8 @@ Without `.class` modifier, elements with `diffyne:loading` get default styles: `
         <button type="submit">Submit</button>
     </form>
     
-    <div diffyne:loading 
-         class="absolute inset-0 bg-gray-100 bg-opacity-75 flex items-center justify-center">
+    <div diffyne:loading.remove.hidden
+         class="absolute inset-0 bg-white bg-opacity-75 hidden flex items-center justify-center">
         <div class="text-center">
             <svg class="animate-spin h-12 w-12 mx-auto mb-2" viewBox="0 0 24 24">
                 <!-- Spinner SVG -->
@@ -131,14 +136,46 @@ Adds CSS class during loading:
 
 ```blade
 <button diffyne:loading.class.opacity-50>
-<button diffyne:loading.class.bg-gray-400.cursor-wait>
+<button diffyne:loading.class.disabled>
 ```
 
-Chain multiple classes by adding more segments after `.class`.
+The specified class is added when loading starts and removed when loading ends.
 
-### No Modifier (Show with Default Styles)
+### .remove.{className}
 
-Shows element during loading with default opacity and pointer-events:
+Removes CSS class during loading (re-adds when done):
+
+```blade
+<span diffyne:loading.remove.hidden class="hidden">
+    <svg class="animate-spin">...</svg>
+</span>
+```
+
+Perfect for showing hidden elements during loading. The class is removed when loading starts and restored when loading completes.
+
+### .attr.{attrName}
+
+Sets an attribute during loading (empty value):
+
+```blade
+<button diffyne:loading.attr.disabled>Submit</button>
+```
+
+Original attribute values are preserved and restored after loading.
+
+### .attr.{attrName}.{value}
+
+Sets an attribute with a specific value during loading:
+
+```blade
+<button diffyne:loading.attr.aria-busy.true>Process</button>
+```
+
+Useful for setting ARIA attributes or other attributes that need specific values.
+
+### No Modifier (Default Styles)
+
+Without modifiers, elements get default opacity and pointer-events:
 
 ```blade
 <div diffyne:loading>
@@ -147,6 +184,13 @@ Shows element during loading with default opacity and pointer-events:
 ```
 
 Elements get `opacity: 0.5` and `pointer-events: none` automatically.
+
+## Important Notes
+
+- Each element can have **one** `diffyne:loading` attribute with its modifiers
+- The attribute name itself contains the modifiers (e.g., `diffyne:loading.remove.hidden`)
+- Original attribute values are automatically preserved and restored
+- Classes are added/removed atomically for smooth transitions
 
 ## Multiple Loading States
 
@@ -197,11 +241,46 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 
 ## Advanced Patterns
 
+### Complete Form with All Loading Features
+
+```blade
+<form diffyne:submit="submit" class="relative">
+    {{-- Loading overlay using .remove.hidden --}}
+    <div diffyne:loading.remove.hidden
+         class="absolute inset-0 bg-white bg-opacity-75 hidden flex items-center justify-center rounded-lg z-10">
+        <div class="text-center">
+            <svg class="animate-spin h-10 w-10 text-blue-500 mx-auto mb-2" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p>Processing your request...</p>
+        </div>
+    </div>
+    
+    <input diffyne:model="name" class="mb-4">
+    <input diffyne:model="email" class="mb-4">
+    
+    {{-- Button with disabled attribute and spinner --}}
+    <button
+        type="submit"
+        diffyne:loading.attr.disabled
+        class="bg-blue-500 text-white px-6 py-3 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+        <span diffyne:loading.remove.hidden class="hidden mr-2">
+            <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </span>
+        Submit
+    </button>
+</form>
+```
+
 ### Disabled Form During Loading
 
 ```blade
 <form diffyne:submit="submit">
-    <div diffyne:loading.class.opacity-50.pointer-events-none>
+    <div diffyne:loading.class.opacity-50>
         <input diffyne:model="name">
         <input diffyne:model="email">
         <textarea diffyne:model="message"></textarea>
@@ -209,7 +288,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
         <button type="submit">Submit</button>
     </div>
     
-    <div diffyne:loading class="text-blue-500 mt-2">
+    <div diffyne:loading.remove.hidden class="hidden text-blue-500 mt-2">
         Submitting your form...
     </div>
 </form>
@@ -316,7 +395,8 @@ Usage:
 ```blade
 <button 
     diffyne:click="save"
-    diffyne:loading.attr="disabled">
+    diffyne:loading.attr.disabled
+    class="disabled:opacity-50 disabled:cursor-not-allowed">
     Save
 </button>
 ```
@@ -327,9 +407,13 @@ Prevents multiple clicks and duplicate requests.
 
 ```blade
 {{-- Good - clear feedback --}}
-<button diffyne:loading.class="opacity-50 cursor-not-allowed">
-    <span diffyne:loading.remove>Save</span>
-    <span diffyne:loading>Saving...</span>
+<button 
+    diffyne:loading.attr.disabled
+    class="disabled:opacity-50">
+    <span diffyne:loading.remove.hidden class="hidden">
+        <svg class="animate-spin">...</svg>
+    </span>
+    Save
 </button>
 
 {{-- Avoid - no feedback --}}
