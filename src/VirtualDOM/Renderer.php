@@ -54,15 +54,17 @@ class Renderer
         $html = $this->renderComponentView($component);
         $newVdom = $this->parser->parse($html);
 
-        // Parse the previous HTML if provided
-        $oldVdom = null;
-        if ($previousHtml && trim($previousHtml) !== '') {
+        $oldVdom = $this->snapshots[$component->id] ?? null;
+        
+        if ($oldVdom === null && $previousHtml && trim($previousHtml) !== '') {
             $oldVdom = $this->parser->parse($previousHtml);
         }
 
         // Generate patches
         $patches = $this->diffEngine->diff($oldVdom, $newVdom);
         $patches = $this->diffEngine->optimizePatches($patches);
+        
+        $this->snapshots[$component->id] = $newVdom;
 
         $result = [
             'id' => $component->id,
@@ -119,6 +121,16 @@ class Renderer
     public function getSnapshot(string $componentId): ?VNode
     {
         return $this->snapshots[$componentId] ?? null;
+    }
+
+    /**
+     * Create and store a snapshot for a component.
+     */
+    public function snapshotComponent(Component $component): void
+    {
+        $html = $this->renderComponentView($component);
+        $vdom = $this->parser->parse($html);
+        $this->snapshots[$component->id] = $vdom;
     }
 
     /**

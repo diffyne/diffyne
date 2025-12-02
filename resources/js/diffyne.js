@@ -342,7 +342,6 @@ class Diffyne {
                 params,
                 state: component.state,
                 fingerprint: component.fingerprint,
-                previousHtml: component.element.firstElementChild?.outerHTML || '',
                 errors: component.errors || {}
             });
 
@@ -380,7 +379,6 @@ class Diffyne {
                 value,
                 state: component.state,
                 fingerprint: component.fingerprint,
-                previousHtml: component.element.firstElementChild?.outerHTML || '',
                 errors: component.errors || {}
             });
 

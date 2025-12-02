@@ -64,6 +64,9 @@ class DiffyneController extends Controller
 
             // Hydrate component from state
             $component = $this->hydrator->hydrate($componentClass, $state, $componentId);
+            
+            // Store initial snapshot for diffing
+            $this->renderer->snapshotComponent($component);
 
             // Restore error bag if present
             if ($request->has('errors')) {
