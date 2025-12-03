@@ -29,6 +29,7 @@ return [
         'host' => env('DIFFYNE_WS_HOST', '127.0.0.1'),
         'port' => env('DIFFYNE_WS_PORT', 6001),
         'path' => env('DIFFYNE_WS_PATH', '/diffyne'),
+        'key' => env('DIFFYNE_WS_KEY', 'd2c61c0f8393e8b5273e84879276cbe7'),
         'cors' => [
             'allowed_origins' => explode(',', env('DIFFYNE_WS_CORS_ORIGINS', '*')),
             'allowed_methods' => ['GET', 'POST', 'OPTIONS'],

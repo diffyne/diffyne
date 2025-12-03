@@ -30,12 +30,14 @@ class DiffyneWebSocketCommand extends Command
         $host = config('diffyne.websocket.host', '127.0.0.1');
         $port = config('diffyne.websocket.port', 6001);
         $debug = config('diffyne.debug', false);
+        $key = config('diffyne.websocket.key', null);
 
         $logger = new Logger(LogLevel::INFO, false, true, storage_path('logs/diffyne-websocket'), false);
         $config = new ServerConfig([
             'host' => $host,
             'port' => (int) $port,
             'debug' => $debug,
+            'auth_key' => $key,
             'cors' => [
                 'allowed_origins' => config('diffyne.websocket.cors.allowed_origins', ['*']),
                 'allowed_methods' => ['GET', 'POST', 'OPTIONS'],
