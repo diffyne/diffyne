@@ -48,14 +48,14 @@ class Diffyne {
      * Hydrate all Diffyne components in the DOM
      */
     hydrateComponents() {
-        const elements = document.querySelectorAll('[diffyne\\:id]');
+        const elements = document.querySelectorAll('[diff\\:id]');
         
         elements.forEach(element => {
-            const id = element.getAttribute('diffyne:id');
-            const componentClass = element.getAttribute('diffyne:class');
-            const componentName = element.getAttribute('diffyne:name');
-            const state = this.parseJSON(element.getAttribute('diffyne:state') || '{}');
-            const fingerprint = element.getAttribute('diffyne:fingerprint');
+            const id = element.getAttribute('diff:id');
+            const componentClass = element.getAttribute('diff:class');
+            const componentName = element.getAttribute('diff:name');
+            const state = this.parseJSON(element.getAttribute('diff:state') || '{}');
+            const fingerprint = element.getAttribute('diff:fingerprint');
 
             this.components.set(id, {
                 id,
@@ -121,18 +121,18 @@ class Diffyne {
 
         // Click events (delegated)
         wrapper.addEventListener('click', (e) => {
-            const target = e.target.closest('[diffyne\\:click]');
+            const target = e.target.closest('[diff\\:click]');
             if (target && wrapper.contains(target)) {
-                const action = target.getAttribute('diffyne:click');
+                const action = target.getAttribute('diff:click');
                 this.handleAction(componentId, action, e);
             }
         });
 
         // Change events (delegated)
         wrapper.addEventListener('change', (e) => {
-            const target = e.target.closest('[diffyne\\:change]');
+            const target = e.target.closest('[diff\\:change]');
             if (target && wrapper.contains(target)) {
-                const action = target.getAttribute('diffyne:change');
+                const action = target.getAttribute('diff:change');
                 this.handleAction(componentId, action, e);
             }
         });
@@ -143,7 +143,7 @@ class Diffyne {
             
             // Find the diffyne:model attribute (could be diffyne:model, diffyne:model.live, etc.)
             const modelAttr = Array.from(target.attributes).find(attr => 
-                attr.name === 'diffyne:model' || attr.name.startsWith('diffyne:model.')
+                attr.name === 'diff:model' || attr.name.startsWith('diff:model.')
             );
             
             if (modelAttr) {
@@ -175,7 +175,7 @@ class Diffyne {
             const target = e.target;
             
             const modelAttr = Array.from(target.attributes).find(attr => 
-                attr.name === 'diffyne:model' || attr.name.startsWith('diffyne:model.')
+                attr.name === 'diff:model' || attr.name.startsWith('diff:model.')
             );
             
             if (modelAttr) {
@@ -194,21 +194,21 @@ class Diffyne {
 
         // Submit events (delegated)
         wrapper.addEventListener('submit', (e) => {
-            const target = e.target.closest('[diffyne\\:submit]');
+            const target = e.target.closest('[diff\\:submit]');
             if (target && wrapper.contains(target)) {
                 e.preventDefault();
-                const action = target.getAttribute('diffyne:submit');
+                const action = target.getAttribute('diff:submit');
                 this.handleAction(componentId, action, e);
             }
         });
 
         // Poll directives (set up once on hydration)
-        wrapper.querySelectorAll('[diffyne\\:poll]').forEach(el => {
+        wrapper.querySelectorAll('[diff\\:poll]').forEach(el => {
             if (el.hasAttribute('data-diffyne-poll-bound')) return;
             el.setAttribute('data-diffyne-poll-bound', 'true');
             
-            const interval = parseInt(el.getAttribute('diffyne:poll')) || 2000;
-            const action = el.getAttribute('diffyne:poll.action') || 'refresh';
+            const interval = parseInt(el.getAttribute('diff:poll')) || 2000;
+            const action = el.getAttribute('diff:poll.action') || 'refresh';
             
             setInterval(() => {
                 this.handleAction(componentId, action);
@@ -218,11 +218,11 @@ class Diffyne {
 
     /**
      * Parse modifiers from directive
-     * @param {string} attrName - The attribute name (e.g., "diffyne:model.live.debounce.500")
+     * @param {string} attrName - The attribute name (e.g., "diff:model.live.debounce.500")
      * @param {string} property - The property name from attribute value (e.g., "user.name")
      */
     parseModifiers(attrName, property) {
-        // Parse modifiers from attribute name (e.g., diffyne:model.live.debounce.500)
+        // Parse modifiers from attribute name (e.g., diff:model.live.debounce.500)
         const parts = attrName.split('.');
         
         const mods = {
@@ -535,7 +535,7 @@ class Diffyne {
         // Update component metadata only if state is provided
         if (state) {
             component.state = state;
-            component.element.setAttribute('diffyne:state', JSON.stringify(state));
+            component.element.setAttribute('diff:state', JSON.stringify(state));
             
             // Sync input values with state for model-bound inputs
             this.syncModelInputs(component.element, state);
@@ -543,7 +543,7 @@ class Diffyne {
         
         if (fingerprint) {
             component.fingerprint = fingerprint;
-            component.element.setAttribute('diffyne:fingerprint', fingerprint);
+            component.element.setAttribute('diff:fingerprint', fingerprint);
         }
 
         // Update URL query string if provided
@@ -567,13 +567,13 @@ class Diffyne {
         this.clearErrors(element);
 
         Object.entries(errors).forEach(([field, messages]) => {
-            const fieldElement = element.querySelector(`[name="${field}"], [diffyne\\:model="${field}"]`);
+            const fieldElement = element.querySelector(`[name="${field}"], [diff\\:model="${field}"]`);
             
             if (fieldElement) {
                 fieldElement.classList.add('diffyne-error');
                 fieldElement.setAttribute('aria-invalid', 'true');
 
-                const errorDisplay = element.querySelector(`[diffyne\\:error="${field}"]`);
+                const errorDisplay = element.querySelector(`[diff\\:error="${field}"]`);
                 
                 if (errorDisplay) {
                     errorDisplay.textContent = Array.isArray(messages) ? messages[0] : messages;
@@ -605,7 +605,7 @@ class Diffyne {
         });
 
         // Clear error displays
-        element.querySelectorAll('[diffyne\\:error]').forEach(el => {
+        element.querySelectorAll('[diff\\:error]').forEach(el => {
             el.textContent = '';
             el.style.display = 'none';
         });
@@ -622,13 +622,13 @@ class Diffyne {
     syncModelInputs(element, state) {
         const modelInputs = Array.from(element.querySelectorAll('*')).filter(el => {
             return Array.from(el.attributes).some(attr => 
-                attr.name === 'diffyne:model' || attr.name.startsWith('diffyne:model.')
+                attr.name === 'diff:model' || attr.name.startsWith('diff:model.')
             );
         });
         
         modelInputs.forEach(input => {
             const modelAttr = Array.from(input.attributes).find(attr => 
-                attr.name === 'diffyne:model' || attr.name.startsWith('diffyne:model.')
+                attr.name === 'diff:model' || attr.name.startsWith('diff:model.')
             );
             
             if (!modelAttr) return;
@@ -899,19 +899,19 @@ class Diffyne {
     /**
      * Show loading state
      * Supports modifiers:
-     * - diffyne:loading (default: opacity + pointer-events)
-     * - diffyne:loading.class.{className} (add class)
-     * - diffyne:loading.remove.{className} (remove class)
-     * - diffyne:loading.attr.{attrName} (set attribute to empty string)
-     * - diffyne:loading.attr.{attrName}.{value} (set attribute with value)
+     * - diff:loading (default: opacity + pointer-events)
+     * - diff:loading.class.{className} (add class)
+     * - diff:loading.remove.{className} (remove class)
+     * - diff:loading.attr.{attrName} (set attribute to empty string)
+     * - diff:loading.attr.{attrName}.{value} (set attribute with value)
      */
     showLoading(element) {
         const loadingElements = Array.from(element.querySelectorAll('*')).filter(el => {
-            return Array.from(el.attributes).some(attr => attr.name.startsWith('diffyne:loading'));
+            return Array.from(el.attributes).some(attr => attr.name.startsWith('diff:loading'));
         });
         
         loadingElements.forEach(el => {
-            const loadingAttr = Array.from(el.attributes).find(attr => attr.name.startsWith('diffyne:loading'));
+            const loadingAttr = Array.from(el.attributes).find(attr => attr.name.startsWith('diff:loading'));
             if (!loadingAttr) return;
             
             const directive = loadingAttr.value;
@@ -955,11 +955,11 @@ class Diffyne {
      */
     hideLoading(element) {
         const loadingElements = Array.from(element.querySelectorAll('*')).filter(el => {
-            return Array.from(el.attributes).some(attr => attr.name.startsWith('diffyne:loading'));
+            return Array.from(el.attributes).some(attr => attr.name.startsWith('diff:loading'));
         });
         
         loadingElements.forEach(el => {
-            const loadingAttr = Array.from(el.attributes).find(attr => attr.name.startsWith('diffyne:loading'));
+            const loadingAttr = Array.from(el.attributes).find(attr => attr.name.startsWith('diff:loading'));
             if (!loadingAttr) return;
             
             const directive = loadingAttr.value;
@@ -1005,7 +1005,7 @@ class Diffyne {
             mutations.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
-                        const newComponents = node.querySelectorAll('[diffyne\\:id]');
+                        const newComponents = node.querySelectorAll('[diff\\:id]');
                         newComponents.forEach(el => this.hydrateComponent(el));
                     }
                 });

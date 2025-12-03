@@ -62,8 +62,8 @@ class HTMLParser
 
             $vnode = VNode::element($node->nodeName, $attributes, $children);
             
-            if (isset($attributes['diffyne:key'])) {
-                $vnode->key = $attributes['diffyne:key'];
+            if (isset($attributes['diff:key'])) {
+                $vnode->key = $attributes['diff:key'];
             } elseif (isset($attributes['key'])) {
                 $vnode->key = $attributes['key'];
             }

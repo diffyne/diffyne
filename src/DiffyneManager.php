@@ -95,11 +95,11 @@ class DiffyneManager
 
         return <<<HTML
 <div 
-    diffyne:id="{$id}"
-    diffyne:class="{$componentClass}"
-    diffyne:name="{$componentName}"
-    diffyne:state="{$state}"
-    diffyne:fingerprint="{$fingerprint}"
+    diff:id="{$id}"
+    diff:class="{$componentClass}"
+    diff:name="{$componentName}"
+    diff:state="{$state}"
+    diff:fingerprint="{$fingerprint}"
     data-diffyne-component
 >
     {$html}
