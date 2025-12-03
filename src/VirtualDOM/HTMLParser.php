@@ -60,7 +60,15 @@ class HTMLParser
             $attributes = $this->extractAttributes($node);
             $children = $this->convertChildren($node);
 
-            return VNode::element($node->nodeName, $attributes, $children);
+            $vnode = VNode::element($node->nodeName, $attributes, $children);
+            
+            if (isset($attributes['diffyne:key'])) {
+                $vnode->key = $attributes['diffyne:key'];
+            } elseif (isset($attributes['key'])) {
+                $vnode->key = $attributes['key'];
+            }
+            
+            return $vnode;
         }
 
         // Default to text node for unknown types

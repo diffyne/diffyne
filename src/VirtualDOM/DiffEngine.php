@@ -176,49 +176,31 @@ class DiffEngine
         array $oldKeyed,
         array $newKeyed
     ): void {
-        $moves = [];
-        $oldIndex = 0;
-        $newIndex = 0;
+        $toRemove = [];
+        foreach ($oldKeyed as $key => $position) {
+            if (! isset($newKeyed[$key])) {
+                $toRemove[] = $position;
+            }
+        }
+        
+        rsort($toRemove);
+        foreach ($toRemove as $position) {
+            $this->diffNodes($oldChildren[$position], null, [...$parentPath, $position]);
+        }
 
-        // Build a map of where each keyed node should be
-        foreach ($newChildren as $i => $newChild) {
+        foreach ($newChildren as $newIndex => $newChild) {
             $key = $newChild->key;
 
             if ($key !== null && isset($oldKeyed[$key])) {
                 $oldPosition = $oldKeyed[$key];
-
-                if ($oldPosition !== $i) {
-                    $moves[] = [
-                        'key' => $key,
-                        'from' => $oldPosition,
-                        'to' => $i,
-                    ];
-                }
-
-                // Diff the actual nodes
                 $this->diffNodes(
                     $oldChildren[$oldPosition],
                     $newChild,
-                    [...$parentPath, $i]
+                    [...$parentPath, $newIndex]
                 );
             } else {
-                // New keyed node
-                $this->diffNodes(null, $newChild, [...$parentPath, $i]);
+                $this->diffNodes(null, $newChild, [...$parentPath, $newIndex]);
             }
-        }
-
-        // Find removed keyed nodes
-        foreach ($oldKeyed as $key => $position) {
-            if (! isset($newKeyed[$key])) {
-                $this->diffNodes($oldChildren[$position], null, [...$parentPath, $position]);
-            }
-        }
-
-        // Add reorder patch if there are moves
-        if (! empty($moves)) {
-            $this->addPatch(self::PATCH_REORDER, $parentPath, [
-                'moves' => $moves,
-            ]);
         }
     }
 
