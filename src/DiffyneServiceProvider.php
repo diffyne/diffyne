@@ -3,8 +3,8 @@
 namespace Diffyne;
 
 use Diffyne\Console\Commands\DiffyneInstallCommand;
-use Diffyne\Console\Commands\MakeDiffyneCommand;
 use Diffyne\Console\Commands\DiffyneWebSocketCommand;
+use Diffyne\Console\Commands\MakeDiffyneCommand;
 use Diffyne\State\ComponentHydrator;
 use Diffyne\VirtualDOM\Renderer;
 use Illuminate\Support\Facades\Blade;

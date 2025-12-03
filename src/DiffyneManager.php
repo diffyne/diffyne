@@ -49,8 +49,8 @@ class DiffyneManager
 
         $reflection = new ReflectionClass($componentClass);
         $lazyAttributes = $reflection->getAttributes(Lazy::class);
-        
-        if (!empty($lazyAttributes)) {
+
+        if (! empty($lazyAttributes)) {
             return $this->mountLazy($componentClass, $params, $lazyAttributes[0]->newInstance());
         }
 
@@ -67,15 +67,15 @@ class DiffyneManager
     {
         $id = 'diffyne-'.\Illuminate\Support\Str::random(16);
         $paramsEncoded = htmlspecialchars(json_encode($params), ENT_QUOTES, 'UTF-8');
-        
+
         // For nested components, use the full path as component name
         $namespace = config('diffyne.component_namespace', 'App\\Diffyne');
         $componentName = str_replace($namespace.'\\', '', $componentClass);
         $componentName = str_replace('\\', '/', $componentName);
-        
+
         // Default placeholder
         $placeholder = $lazyAttr->placeholder ?? $this->getDefaultPlaceholder();
-        
+
         return <<<HTML
 <div 
     diff:id="{$id}"

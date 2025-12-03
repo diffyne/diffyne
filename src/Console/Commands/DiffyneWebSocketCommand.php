@@ -41,19 +41,20 @@ class DiffyneWebSocketCommand extends Command
             'cors' => [
                 'allowed_origins' => config('diffyne.websocket.cors.allowed_origins', ['*']),
                 'allowed_methods' => ['GET', 'POST', 'OPTIONS'],
-                'allowed_headers' => ['Content-Type', 'Authorization', 'X-CSRF-TOKEN']
+                'allowed_headers' => ['Content-Type', 'Authorization', 'X-CSRF-TOKEN'],
             ],
             'logger' => $logger,
         ]);
 
         $server = new Server($config);
 
-        $server->registerController(new DiffyneController());
+        $server->registerController(new DiffyneController);
 
         try {
             $server->run();
         } catch (Exception $e) {
-            $this->error("Failed to start WebSocket server: " . $e->getMessage());
+            $this->error('Failed to start WebSocket server: '.$e->getMessage());
+
             return Command::FAILURE;
         }
 

@@ -10,10 +10,9 @@ class Lazy
     /**
      * Create a new Lazy attribute instance.
      *
-     * @param string $placeholder Placeholder content to show while loading (HTML string or component class)
+     * @param  string  $placeholder  Placeholder content to show while loading (HTML string or component class)
      */
     public function __construct(
         public ?string $placeholder = null,
-    ) {
-    }
+    ) {}
 }

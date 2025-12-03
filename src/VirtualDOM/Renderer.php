@@ -60,7 +60,7 @@ class Renderer
         // Generate patches
         $patches = $this->diffEngine->diff($oldVdom, $newVdom);
         $patches = $this->diffEngine->optimizePatches($patches);
-        
+
         $this->snapshots[$component->id] = $newVdom;
 
         $result = [
@@ -77,24 +77,24 @@ class Renderer
 
         // Include query string for URL-bound properties
         $queryString = $component->getQueryString();
-        if (!empty($queryString)) {
+        if (! empty($queryString)) {
             $result['queryString'] = $queryString;
         }
 
         // Include dispatched events
         $dispatchedEvents = $component->getDispatchedEvents();
-        if (!empty($dispatchedEvents)) {
+        if (! empty($dispatchedEvents)) {
             $result['events'] = $dispatchedEvents;
         }
 
         // Include browser events
         $browserEvents = $component->getBrowserEvents();
-        if (!empty($browserEvents)) {
+        if (! empty($browserEvents)) {
             $result['browserEvents'] = $browserEvents;
         }
 
         // Clear events after adding to response (only if there were any)
-        if (!empty($dispatchedEvents) || !empty($browserEvents)) {
+        if (! empty($dispatchedEvents) || ! empty($browserEvents)) {
             $component->clearDispatchedEvents();
         }
 

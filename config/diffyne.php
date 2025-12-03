@@ -9,7 +9,7 @@ return [
     |
     | Diffyne supports two transport modes:
     | - 'ajax': Standard HTTP requests (default)
-    | - 'websocket': Real-time WebSocket connections 
+    | - 'websocket': Real-time WebSocket connections
     |
     */
 

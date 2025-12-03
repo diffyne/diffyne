@@ -5,8 +5,8 @@ namespace Diffyne\WebSocket;
 use Diffyne\DiffyneManager;
 use Diffyne\Exceptions\RedirectException;
 use Diffyne\State\ComponentHydrator;
-use Diffyne\VirtualDOM\Renderer;
 use Diffyne\VirtualDOM\PatchSerializer;
+use Diffyne\VirtualDOM\Renderer;
 use Sockeon\Sockeon\Controllers\SocketController;
 use Sockeon\Sockeon\WebSocket\Attributes\OnConnect;
 use Sockeon\Sockeon\WebSocket\Attributes\OnDisconnect;
@@ -15,8 +15,11 @@ use Sockeon\Sockeon\WebSocket\Attributes\SocketOn;
 class DiffyneController extends SocketController
 {
     protected Renderer $renderer;
+
     protected ComponentHydrator $hydrator;
+
     protected DiffyneManager $manager;
+
     protected PatchSerializer $serializer;
 
     public function __construct()
@@ -36,7 +39,7 @@ class DiffyneController extends SocketController
         $this->emit($clientId, 'diffyne.connected', [
             'clientId' => $clientId,
             'message' => 'Connected to Diffyne WebSocket server',
-            'timestamp' => time()
+            'timestamp' => time(),
         ]);
 
         $this->getLogger()->info("Client {$clientId} connected to Diffyne");
@@ -64,26 +67,28 @@ class DiffyneController extends SocketController
             $state = $data['state'] ?? [];
             $fingerprint = $data['fingerprint'] ?? null;
 
-            if (!$componentClass || !$method) {
+            if (! $componentClass || ! $method) {
                 $this->emit($clientId, 'diffyne.error', [
                     'error' => 'Missing required parameters',
-                    'type' => 'validation_error'
+                    'type' => 'validation_error',
                 ]);
+
                 return;
             }
 
             // Hydrate component from state
             $component = $this->hydrator->hydrate($componentClass, $state, $data['componentId']);
-            
+
             // Store initial snapshot for diffing
             $this->renderer->snapshotComponent($component);
 
             // Call the method
-            if (!method_exists($component, $method)) {
+            if (! method_exists($component, $method)) {
                 $this->emit($clientId, 'diffyne.error', [
                     'error' => "Method {$method} does not exist",
-                    'type' => 'method_error'
+                    'type' => 'method_error',
                 ]);
+
                 return;
             }
 
@@ -106,7 +111,7 @@ class DiffyneController extends SocketController
             $this->emit($clientId, 'diffyne.response', [
                 's' => true,
                 'redirect' => $redirectData['redirect'],
-                'requestId' => $data['requestId'] ?? null
+                'requestId' => $data['requestId'] ?? null,
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->emit($clientId, 'diffyne.response', [
@@ -114,7 +119,7 @@ class DiffyneController extends SocketController
                 'error' => 'Validation failed',
                 'type' => 'validation_error',
                 'errors' => $e->errors(),
-                'requestId' => $data['requestId'] ?? null
+                'requestId' => $data['requestId'] ?? null,
             ]);
         } catch (\Exception $e) {
             $this->emit($clientId, 'diffyne.response', [
@@ -124,9 +129,9 @@ class DiffyneController extends SocketController
                 'details' => [
                     'exception' => get_class($e),
                     'file' => $e->getFile(),
-                    'line' => $e->getLine()
+                    'line' => $e->getLine(),
                 ],
-                'requestId' => $data['requestId'] ?? null
+                'requestId' => $data['requestId'] ?? null,
             ]);
         }
     }
@@ -144,26 +149,28 @@ class DiffyneController extends SocketController
             $state = $data['state'] ?? [];
             $fingerprint = $data['fingerprint'] ?? null;
 
-            if (!$componentClass || !$property) {
+            if (! $componentClass || ! $property) {
                 $this->emit($clientId, 'diffyne.error', [
                     'error' => 'Missing required parameters',
-                    'type' => 'validation_error'
+                    'type' => 'validation_error',
                 ]);
+
                 return;
             }
 
             // Hydrate component from state
             $component = $this->hydrator->hydrate($componentClass, $state, $data['componentId']);
-            
+
             // Store initial snapshot for diffing
             $this->renderer->snapshotComponent($component);
 
             // Update the property
-            if (!property_exists($component, $property)) {
+            if (! property_exists($component, $property)) {
                 $this->emit($clientId, 'diffyne.error', [
                     'error' => "Property {$property} does not exist",
-                    'type' => 'property_error'
+                    'type' => 'property_error',
                 ]);
+
                 return;
             }
 
@@ -191,7 +198,7 @@ class DiffyneController extends SocketController
             $this->emit($clientId, 'diffyne.response', [
                 's' => true,
                 'redirect' => $redirectData['redirect'],
-                'requestId' => $data['requestId'] ?? null
+                'requestId' => $data['requestId'] ?? null,
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->emit($clientId, 'diffyne.response', [
@@ -199,7 +206,7 @@ class DiffyneController extends SocketController
                 'error' => 'Validation failed',
                 'type' => 'validation_error',
                 'errors' => $e->errors(),
-                'requestId' => $data['requestId'] ?? null
+                'requestId' => $data['requestId'] ?? null,
             ]);
         } catch (\Exception $e) {
             $this->emit($clientId, 'diffyne.response', [
@@ -209,9 +216,9 @@ class DiffyneController extends SocketController
                 'details' => [
                     'exception' => get_class($e),
                     'file' => $e->getFile(),
-                    'line' => $e->getLine()
+                    'line' => $e->getLine(),
                 ],
-                'requestId' => $data['requestId'] ?? null
+                'requestId' => $data['requestId'] ?? null,
             ]);
         }
     }
@@ -223,7 +230,7 @@ class DiffyneController extends SocketController
     public function handlePing(int $clientId, array $data): void
     {
         $this->emit($clientId, 'diffyne.pong', [
-            'timestamp' => time()
+            'timestamp' => time(),
         ]);
     }
 }

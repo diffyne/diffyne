@@ -80,11 +80,11 @@ class ComponentHydrator
     protected function syncFromQueryString(Component $component): void
     {
         $urlProperties = $component->getUrlProperties();
-        
+
         foreach ($urlProperties as $property => $config) {
             $queryKey = $config['as'];
             $value = request()->query($queryKey);
-            
+
             if ($value !== null && property_exists($component, $property)) {
                 $component->$property = $value;
             }

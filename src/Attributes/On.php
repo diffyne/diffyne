@@ -6,7 +6,7 @@ use Attribute;
 
 /**
  * Mark a method as an event listener.
- * 
+ *
  * @example
  * #[On('user-updated')]
  * public function handleUserUpdate($userId) { }
@@ -16,6 +16,5 @@ class On
 {
     public function __construct(
         public string $event
-    ) {
-    }
+    ) {}
 }

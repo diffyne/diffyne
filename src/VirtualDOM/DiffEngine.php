@@ -183,7 +183,7 @@ class DiffEngine
                 $toRemove[] = $position;
             }
         }
-        
+
         // Remove in reverse order to avoid index shifting
         rsort($toRemove);
         foreach ($toRemove as $position) {
@@ -198,7 +198,7 @@ class DiffEngine
             if ($key !== null && isset($oldKeyed[$key])) {
                 // Node exists in old list
                 $oldPosition = $oldKeyed[$key];
-                
+
                 // Check if the key at this position changed (reorder)
                 if ($oldChildAtIndex && $oldChildAtIndex->key !== $key) {
                     // Position has different key - replace the node

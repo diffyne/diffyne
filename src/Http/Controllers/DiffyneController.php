@@ -3,11 +3,11 @@
 namespace Diffyne\Http\Controllers;
 
 use BadMethodCallException;
+use Diffyne\DiffyneManager;
 use Diffyne\Exceptions\RedirectException;
 use Diffyne\State\ComponentHydrator;
 use Diffyne\VirtualDOM\PatchSerializer;
 use Diffyne\VirtualDOM\Renderer;
-use Diffyne\DiffyneManager;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -69,7 +69,7 @@ class DiffyneController extends Controller
 
             // Hydrate component from state
             $component = $this->hydrator->hydrate($componentClass, $state, $componentId);
-            
+
             // Store initial snapshot for diffing
             $this->renderer->snapshotComponent($component);
 
@@ -120,12 +120,13 @@ class DiffyneController extends Controller
 
             // Optimize response
             $serializedResponse = $this->serializer->toResponse($response, config('diffyne.performance.minify_patches', true));
-            
+
             return response()->json($serializedResponse)
                 ->header('Content-Type', 'application/json; charset=utf-8');
 
         } catch (RedirectException $e) {
             $redirectData = $e->getRedirectData();
+
             return response()->json([
                 's' => true,
                 'redirect' => $redirectData['redirect'],
@@ -223,7 +224,7 @@ class DiffyneController extends Controller
             $params = $request->input('params', []);
             $queryParams = $request->input('queryParams', []);
 
-            if (!$componentClass || !class_exists($componentClass)) {
+            if (! $componentClass || ! class_exists($componentClass)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Invalid component class',

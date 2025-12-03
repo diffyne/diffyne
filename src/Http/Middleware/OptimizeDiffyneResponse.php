@@ -16,7 +16,7 @@ class OptimizeDiffyneResponse
         $response = $next($request);
 
         // Only optimize Diffyne JSON responses
-        if (!$this->isDiffyneRequest($request) || !$response->headers->get('Content-Type') === 'application/json') {
+        if (! $this->isDiffyneRequest($request) || ! $response->headers->get('Content-Type') === 'application/json') {
             return $response;
         }
 
@@ -28,10 +28,10 @@ class OptimizeDiffyneResponse
         // Enable compression if supported and configured
         if (config('diffyne.performance.enable_compression', true) && $this->supportsCompression($request)) {
             $content = $response->getContent();
-            
+
             if ($content && strlen($content) > 1024) { // Only compress if > 1KB
                 $compressed = gzencode($content, 6); // Level 6 = good balance
-                
+
                 if ($compressed && strlen($compressed) < strlen($content)) {
                     $response->setContent($compressed);
                     $response->headers->set('Content-Encoding', 'gzip');
@@ -58,6 +58,7 @@ class OptimizeDiffyneResponse
     protected function supportsCompression(Request $request): bool
     {
         $acceptEncoding = $request->header('Accept-Encoding', '');
+
         return str_contains($acceptEncoding, 'gzip');
     }
 }

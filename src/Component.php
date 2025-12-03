@@ -97,10 +97,10 @@ abstract class Component
         foreach ($properties as $property) {
             if (! $property->isStatic() && $property->getName() !== 'id') {
                 $this->tracked[] = $property->getName();
-                
+
                 // Check for QueryString attribute
                 $attributes = $property->getAttributes(QueryString::class);
-                if (!empty($attributes)) {
+                if (! empty($attributes)) {
                     $urlAttr = $attributes[0]->newInstance();
                     $this->urlProperties[$property->getName()] = [
                         'as' => $urlAttr->as ?? $property->getName(),
@@ -128,17 +128,17 @@ abstract class Component
 
             // Get all #[On] attributes on this method
             $attributes = $method->getAttributes(On::class);
-            
+
             foreach ($attributes as $attribute) {
                 /** @var On $onAttribute */
                 $onAttribute = $attribute->newInstance();
                 $eventName = $onAttribute->event;
-                
+
                 // Register this method as a listener for the event
-                if (!isset($this->eventListeners[$eventName])) {
+                if (! isset($this->eventListeners[$eventName])) {
                     $this->eventListeners[$eventName] = [];
                 }
-                
+
                 $this->eventListeners[$eventName][] = $method->getName();
             }
         }
@@ -157,7 +157,7 @@ abstract class Component
      */
     public function handleEvent(string $eventName, array $params = []): void
     {
-        if (!isset($this->eventListeners[$eventName])) {
+        if (! isset($this->eventListeners[$eventName])) {
             return;
         }
 
@@ -538,19 +538,19 @@ abstract class Component
     public function getQueryString(): array
     {
         $query = [];
-        
+
         foreach ($this->urlProperties as $property => $config) {
             $value = $this->$property ?? null;
             $key = $config['as'];
-            
+
             // Skip empty values unless keep is true
-            if (!$config['keep'] && ($value === null || $value === '')) {
+            if (! $config['keep'] && ($value === null || $value === '')) {
                 continue;
             }
-            
+
             $query[$key] = $value;
         }
-        
+
         return $query;
     }
 

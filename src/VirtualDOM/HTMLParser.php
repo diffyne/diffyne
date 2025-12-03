@@ -61,13 +61,13 @@ class HTMLParser
             $children = $this->convertChildren($node);
 
             $vnode = VNode::element($node->nodeName, $attributes, $children);
-            
+
             if (isset($attributes['diff:key'])) {
                 $vnode->key = $attributes['diff:key'];
             } elseif (isset($attributes['key'])) {
                 $vnode->key = $attributes['key'];
             }
-            
+
             return $vnode;
         }
 
