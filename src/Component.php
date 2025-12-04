@@ -178,10 +178,15 @@ abstract class Component
      */
     protected function view(): string
     {
-        $class = str_replace('\\', '/', static::class);
-        $name = Str::kebab(class_basename($class));
-
-        return "diffyne.{$name}";
+        $classWithoutPackageNamespace = str_replace(config('diffyne.component_namespace', 'App\\Diffyne').'\\', '', static::class);
+        $class = str_replace('\\', '/', $classWithoutPackageNamespace);
+        $parts = explode('/', $class);
+                
+        // Convert each part to kebab-case
+        $parts = array_map(fn($part) => Str::kebab($part), $parts);
+        
+        // Join with dots
+        return 'diffyne.' . implode('.', $parts);
     }
 
     /**

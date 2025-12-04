@@ -34,7 +34,7 @@ class DiffyneController extends SocketController
      * Handle new WebSocket connections
      */
     #[OnConnect]
-    public function onConnect(int $clientId): void
+    public function onConnect(string $clientId): void
     {
         $this->emit($clientId, 'diffyne.connected', [
             'clientId' => $clientId,
@@ -49,7 +49,7 @@ class DiffyneController extends SocketController
      * Handle WebSocket disconnections
      */
     #[OnDisconnect]
-    public function onDisconnect(int $clientId): void
+    public function onDisconnect(string $clientId): void
     {
         $this->getLogger()->info("Client {$clientId} disconnected from Diffyne");
     }
@@ -58,7 +58,7 @@ class DiffyneController extends SocketController
      * Handle component method calls
      */
     #[SocketOn('diffyne.call')]
-    public function handleMethodCall(int $clientId, array $data): void
+    public function handleMethodCall(string $clientId, array $data): void
     {
         try {
             $componentClass = $data['componentClass'] ?? null;
@@ -140,7 +140,7 @@ class DiffyneController extends SocketController
      * Handle component property updates
      */
     #[SocketOn('diffyne.update')]
-    public function handlePropertyUpdate(int $clientId, array $data): void
+    public function handlePropertyUpdate(string $clientId, array $data): void
     {
         try {
             $componentClass = $data['componentClass'] ?? null;
@@ -227,7 +227,7 @@ class DiffyneController extends SocketController
      * Handle ping from clients
      */
     #[SocketOn('diffyne.ping')]
-    public function handlePing(int $clientId, array $data): void
+    public function handlePing(string $clientId, array $data): void
     {
         $this->emit($clientId, 'diffyne.pong', [
             'timestamp' => time(),
