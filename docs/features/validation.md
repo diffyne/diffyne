@@ -34,20 +34,20 @@ class ContactForm extends Component
 ### Display Errors
 
 ```blade
-<form diffyne:submit.prevent="submit">
+<form diff:submit.prevent="submit">
     <div>
-        <input diffyne:model.defer="name">
-        <span diffyne:error="name" class="text-red-500"></span>
+        <input diff:model.defer="name">
+        <span diff:error="name" class="text-red-500"></span>
     </div>
     
     <div>
-        <input type="email" diffyne:model.defer="email">
-        <span diffyne:error="email" class="text-red-500"></span>
+        <input type="email" diff:model.defer="email">
+        <span diff:error="email" class="text-red-500"></span>
     </div>
     
     <div>
-        <textarea diffyne:model.defer="message"></textarea>
-        <span diffyne:error="message" class="text-red-500"></span>
+        <textarea diff:model.defer="message"></textarea>
+        <span diff:error="message" class="text-red-500"></span>
     </div>
     
     <button type="submit">Submit</button>
@@ -157,9 +157,9 @@ Validate fields as user types or on blur:
 
 ```blade
 <input 
-    diffyne:model.lazy="email"
-    diffyne:change="validateEmail">
-<span diffyne:error="email"></span>
+    diff:model.lazy="email"
+    diff:change="validateEmail">
+<span diff:error="email"></span>
 ```
 
 Component:
@@ -343,7 +343,7 @@ Use Blade directives for conditional classes:
 
 ```blade
 <input 
-    diffyne:model.defer="email"
+    diff:model.defer="email"
     class="border rounded px-3 py-2 
            @error('email') border-red-500 @enderror">
 ```
@@ -352,10 +352,10 @@ Use Blade directives for conditional classes:
 
 ```blade
 <div>
-    <input diffyne:model.defer="email">
+    <input diff:model.defer="email">
     
     {{-- Diffyne automatic error --}}
-    <span diffyne:error="email" class="text-red-500 text-sm"></span>
+    <span diff:error="email" class="text-red-500 text-sm"></span>
     
     {{-- Or manual Blade error --}}
     @error('email')
@@ -367,15 +367,15 @@ Use Blade directives for conditional classes:
 ## Complete Example
 
 ```blade
-<form diffyne:submit.prevent="register">
+<form diff:submit.prevent="register">
     {{-- Name Field --}}
     <div class="mb-4">
         <label class="block text-sm font-medium mb-2">Name</label>
         <input 
             type="text"
-            diffyne:model.defer="name"
+            diff:model.defer="name"
             class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2">
-        <span diffyne:error="name" class="text-red-500 text-sm mt-1 block"></span>
+        <span diff:error="name" class="text-red-500 text-sm mt-1 block"></span>
     </div>
     
     {{-- Email Field --}}
@@ -383,9 +383,9 @@ Use Blade directives for conditional classes:
         <label class="block text-sm font-medium mb-2">Email</label>
         <input 
             type="email"
-            diffyne:model.defer="email"
+            diff:model.defer="email"
             class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2">
-        <span diffyne:error="email" class="text-red-500 text-sm mt-1 block"></span>
+        <span diff:error="email" class="text-red-500 text-sm mt-1 block"></span>
     </div>
     
     {{-- Password Field --}}
@@ -393,9 +393,9 @@ Use Blade directives for conditional classes:
         <label class="block text-sm font-medium mb-2">Password</label>
         <input 
             type="password"
-            diffyne:model.defer="password"
+            diff:model.defer="password"
             class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2">
-        <span diffyne:error="password" class="text-red-500 text-sm mt-1 block"></span>
+        <span diff:error="password" class="text-red-500 text-sm mt-1 block"></span>
     </div>
     
     {{-- Password Confirmation --}}
@@ -403,16 +403,16 @@ Use Blade directives for conditional classes:
         <label class="block text-sm font-medium mb-2">Confirm Password</label>
         <input 
             type="password"
-            diffyne:model.defer="password_confirmation"
+            diff:model.defer="password_confirmation"
             class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2">
-        <span diffyne:error="password_confirmation" class="text-red-500 text-sm mt-1 block"></span>
+        <span diff:error="password_confirmation" class="text-red-500 text-sm mt-1 block"></span>
     </div>
     
     {{-- Submit Button --}}
     <button 
         type="submit"
-        diffyne:loading.class="opacity-50 cursor-not-allowed"
-        diffyne:loading.attr="disabled"
+        diff:loading.class="opacity-50 cursor-not-allowed"
+        diff:loading.attr="disabled"
         class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
         <span diffyne:loading.remove>Register</span>
         <span diffyne:loading>Registering...</span>
@@ -533,7 +533,7 @@ protected function messages(): array
 
 ```blade
 {{-- Preferred - automatic error display --}}
-<span diffyne:error="email"></span>
+<span diff:error="email"></span>
 
 {{-- Also works but less reactive --}}
 @error('email')

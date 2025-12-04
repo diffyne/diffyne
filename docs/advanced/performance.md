@@ -58,10 +58,10 @@ public function loadStats()
 
 ```blade
 {{-- Good - syncs once on submit --}}
-<input diffyne:model.defer="name">
+<input diff:model.defer="name">
 
 {{-- Avoid - syncs on every keystroke --}}
-<input diffyne:model.live="name">
+<input diff:model.live="name">
 ```
 
 ### 2. Add Debouncing
@@ -71,7 +71,7 @@ public function loadStats()
 <input diffyne:model.live.debounce.300="search">
 
 {{-- Avoid - sends request on every keystroke --}}
-<input diffyne:model.live="search">
+<input diff:model.live="search">
 ```
 
 ### 3. Optimize Polling Intervals

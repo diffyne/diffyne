@@ -2,8 +2,8 @@
     <h2>DummyClass Component</h2>
     
     {{-- Example button with click action --}}
-    {{-- <button diffyne:click="methodName">Click Me</button> --}}
+    {{-- <button diff:click="methodName">Click Me</button> --}}
     
     {{-- Example input with model binding --}}
-    {{-- <input type="text" diffyne:model="propertyName"> --}}
+    {{-- <input type="text" diff:model="propertyName"> --}}
 </div>

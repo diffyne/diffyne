@@ -226,8 +226,8 @@ public function save(): void
 Redirects work seamlessly with form submissions:
 
 ```blade
-<form diffyne:submit="save">
-    <input diffyne:model="title">
+<form diff:submit="save">
+    <input diff:model="title">
     <button type="submit">Save</button>
 </form>
 ```

@@ -7,7 +7,7 @@ Handle user interactions with the `diffyne:click` directive.
 Call a component method when an element is clicked:
 
 ```blade
-<button diffyne:click="save">Save</button>
+<button diff:click="save">Save</button>
 ```
 
 In your component:
@@ -25,9 +25,9 @@ public function save()
 ### Simple Parameters
 
 ```blade
-<button diffyne:click="delete({{ $id }})">Delete</button>
-<button diffyne:click="setStatus('active')">Activate</button>
-<button diffyne:click="calculate(10, 20)">Calculate</button>
+<button diff:click="delete({{ $id }})">Delete</button>
+<button diff:click="setStatus('active')">Activate</button>
+<button diff:click="calculate(10, 20)">Calculate</button>
 ```
 
 Component methods:
@@ -52,7 +52,7 @@ public function calculate($a, $b)
 ### Passing Property Values
 
 ```blade
-<button diffyne:click="setCategory('{{ $category }}')">
+<button diff:click="setCategory('{{ $category }}')">
     {{ $category }}
 </button>
 ```
@@ -61,7 +61,7 @@ public function calculate($a, $b)
 
 ```blade
 @foreach($items as $index => $item)
-    <button diffyne:click="updateItem({{ $index }}, '{{ $item['status'] }}')">
+    <button diff:click="updateItem({{ $index }}, '{{ $item['status'] }}')">
         Update
     </button>
 @endforeach
@@ -80,12 +80,12 @@ Show visual feedback during requests:
 
 ```blade
 <button 
-    diffyne:click="save"
-    diffyne:loading.class="opacity-50 cursor-not-allowed">
+    diff:click="save"
+    diff:loading.class="opacity-50 cursor-not-allowed">
     Save
 </button>
 
-<button diffyne:click="delete">
+<button diff:click="delete">
     <span diffyne:loading.remove>Delete</span>
     <span diffyne:loading>Deleting...</span>
 </button>
@@ -97,11 +97,11 @@ Use Blade conditionals to control behavior:
 
 ```blade
 @if($canEdit)
-    <button diffyne:click="edit">Edit</button>
+    <button diff:click="edit">Edit</button>
 @endif
 
 <button 
-    diffyne:click="save"
+    diff:click="save"
     @if(!$isValid) disabled @endif>
     Save
 </button>
@@ -113,7 +113,7 @@ Use Blade conditionals to control behavior:
 
 ```blade
 <button 
-    diffyne:click="delete"
+    diff:click="delete"
     onclick="return confirm('Are you sure?')">
     Delete
 </button>
@@ -133,7 +133,7 @@ public function delete()
 ### Toggle State
 
 ```blade
-<button diffyne:click="toggle">
+<button diff:click="toggle">
     {{ $isActive ? 'Disable' : 'Enable' }}
 </button>
 ```
@@ -156,8 +156,8 @@ public function toggle()
     @foreach($items as $index => $item)
         <li>
             {{ $item['name'] }}
-            <button diffyne:click="edit({{ $index }})">Edit</button>
-            <button diffyne:click="remove({{ $index }})">Remove</button>
+            <button diff:click="edit({{ $index }})">Edit</button>
+            <button diff:click="remove({{ $index }})">Remove</button>
         </li>
     @endforeach
 </ul>
@@ -185,9 +185,9 @@ public function remove($index)
 
 ```blade
 <div>
-    <button diffyne:click="decrement">-</button>
+    <button diff:click="decrement">-</button>
     <span class="mx-4 text-2xl">{{ $count }}</span>
-    <button diffyne:click="increment">+</button>
+    <button diff:click="increment">+</button>
 </div>
 ```
 
@@ -214,7 +214,7 @@ public function decrement()
 ```blade
 <div>
     <button 
-        diffyne:click="previousPage"
+        diff:click="previousPage"
         @if($page === 1) disabled @endif>
         Previous
     </button>
@@ -222,7 +222,7 @@ public function decrement()
     <span>Page {{ $page }}</span>
     
     <button 
-        diffyne:click="nextPage"
+        diff:click="nextPage"
         @if($page === $totalPages) disabled @endif>
         Next
     </button>
@@ -256,12 +256,12 @@ public function previousPage()
 
 ```blade
 {{-- Good --}}
-<button diffyne:click="saveUserProfile">Save</button>
-<button diffyne:click="deletePost">Delete</button>
+<button diff:click="saveUserProfile">Save</button>
+<button diff:click="deletePost">Delete</button>
 
 {{-- Avoid --}}
-<button diffyne:click="action1">Save</button>
-<button diffyne:click="doIt">Delete</button>
+<button diff:click="action1">Save</button>
+<button diff:click="doIt">Delete</button>
 ```
 
 ### 2. Validate on Server
@@ -287,7 +287,7 @@ public function delete($id)
 Always give user feedback:
 
 ```blade
-<button diffyne:click="save">
+<button diff:click="save">
     Save
     <span diffyne:loading>Saving...</span>
 </button>

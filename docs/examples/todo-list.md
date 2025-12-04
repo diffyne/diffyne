@@ -68,18 +68,18 @@ class TodoList extends Component
     <h2 class="text-2xl font-bold mb-4">My Todo List</h2>
     
     {{-- Add Todo Form --}}
-    <form diffyne:submit.prevent="addTodo" class="mb-4">
+    <form diff:submit.prevent="addTodo" class="mb-4">
         <div class="flex gap-2">
             <input 
                 type="text"
-                diffyne:model.defer="newTodo"
+                diff:model.defer="newTodo"
                 placeholder="Add a new todo..."
                 class="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
             <button 
                 type="submit"
-                diffyne:loading.class="opacity-50"
-                diffyne:loading.attr="disabled"
+                diff:loading.class="opacity-50"
+                diff:loading.attr="disabled"
                 class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                 Add
             </button>
@@ -95,14 +95,14 @@ class TodoList extends Component
                         <input 
                             type="checkbox"
                             @if($todo['completed']) checked @endif
-                            diffyne:change="toggleTodo({{ $index }})"
+                            diff:change="toggleTodo({{ $index }})"
                             class="mr-3 w-5 h-5 cursor-pointer">
                         <span class="{{ $todo['completed'] ? 'line-through text-gray-500' : '' }}">
                             {{ $todo['text'] }}
                         </span>
                     </div>
                     <button 
-                        diffyne:click="removeTodo({{ $index }})"
+                        diff:click="removeTodo({{ $index }})"
                         class="text-red-500 hover:text-red-700 font-bold">
                         ✕
                     </button>
@@ -117,7 +117,7 @@ class TodoList extends Component
             
             @if(count(array_filter($todos, fn($t) => $t['completed'])) > 0)
                 <button 
-                    diffyne:click="clearCompleted"
+                    diff:click="clearCompleted"
                     class="text-sm text-red-500 hover:text-red-700">
                     Clear completed
                 </button>
@@ -162,7 +162,7 @@ public function mount()
 ### 3. Form Submission
 
 ```blade
-<form diffyne:submit.prevent="addTodo">
+<form diff:submit.prevent="addTodo">
 ```
 
 - `diffyne:submit` - Handles form submission
@@ -171,7 +171,7 @@ public function mount()
 ### 4. Deferred Binding
 
 ```blade
-<input diffyne:model.defer="newTodo">
+<input diff:model.defer="newTodo">
 ```
 
 `.defer` means the input only syncs when the form is submitted, not on every keystroke. This reduces server requests.
@@ -179,7 +179,7 @@ public function mount()
 ### 5. Passing Parameters
 
 ```blade
-<button diffyne:click="removeTodo({{ $index }})">✕</button>
+<button diff:click="removeTodo({{ $index }})">✕</button>
 ```
 
 You can pass parameters to methods. Here we pass the todo index.
@@ -280,8 +280,8 @@ public function addTodo($priority = 'normal')
 ```
 
 ```blade
-<button diffyne:click="addTodo('high')" class="bg-red-500">High Priority</button>
-<button diffyne:click="addTodo('normal')" class="bg-blue-500">Normal</button>
+<button diff:click="addTodo('high')" class="bg-red-500">High Priority</button>
+<button diff:click="addTodo('normal')" class="bg-blue-500">Normal</button>
 ```
 
 ### Add Persistence
@@ -348,13 +348,13 @@ public function cancelEdit()
     <li>
         @if($editingIndex === $index)
             <input 
-                diffyne:model.defer="editingText"
+                diff:model.defer="editingText"
                 class="flex-1 px-2 py-1 border rounded">
-            <button diffyne:click="saveEdit">Save</button>
-            <button diffyne:click="cancelEdit">Cancel</button>
+            <button diff:click="saveEdit">Save</button>
+            <button diff:click="cancelEdit">Cancel</button>
         @else
             <span>{{ $todo['text'] }}</span>
-            <button diffyne:click="startEdit({{ $index }})">Edit</button>
+            <button diff:click="startEdit({{ $index }})">Edit</button>
         @endif
     </li>
 @endforeach
@@ -389,17 +389,17 @@ public function getFilteredTodos()
 ```blade
 <div class="flex gap-2 mb-4">
     <button 
-        diffyne:click="setFilter('all')"
+        diff:click="setFilter('all')"
         class="{{ $filter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200' }} px-3 py-1 rounded">
         All
     </button>
     <button 
-        diffyne:click="setFilter('active')"
+        diff:click="setFilter('active')"
         class="{{ $filter === 'active' ? 'bg-blue-500 text-white' : 'bg-gray-200' }} px-3 py-1 rounded">
         Active
     </button>
     <button 
-        diffyne:click="setFilter('completed')"
+        diff:click="setFilter('completed')"
         class="{{ $filter === 'completed' ? 'bg-blue-500 text-white' : 'bg-gray-200' }} px-3 py-1 rounded">
         Completed
     </button>

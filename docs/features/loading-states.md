@@ -37,7 +37,7 @@ Sets the `disabled` attribute on the button during loading, preventing duplicate
 ### Default Loading Behavior
 
 ```blade
-<button diffyne:click="submit">
+<button diff:click="submit">
     Submit
     <span diffyne:loading>...</span>
 </button>
@@ -51,7 +51,7 @@ Without modifiers, elements with `diffyne:loading` get default styles: `opacity:
 
 ```blade
 <button 
-    diffyne:click="save"
+    diff:click="save"
     diffyne:loading.attr.disabled
     class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed">
     <span diffyne:loading.remove.hidden class="hidden mr-2">
@@ -70,8 +70,8 @@ Without modifiers, elements with `diffyne:loading` get default styles: `opacity:
 
 ```blade
 <div class="relative">
-    <form diffyne:submit="submit">
-        <input diffyne:model="name">
+    <form diff:submit="submit">
+        <input diff:model="name">
         <button type="submit">Submit</button>
     </form>
     
@@ -91,7 +91,7 @@ Without modifiers, elements with `diffyne:loading` get default styles: `opacity:
 
 ```blade
 <div>
-    <button diffyne:click="process">Start Processing</button>
+    <button diff:click="process">Start Processing</button>
     
     <div diffyne:loading class="mt-4">
         <div class="w-full bg-gray-200 rounded-full h-2.5">
@@ -199,13 +199,13 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 ```blade
 <div>
     <button 
-        diffyne:click="save"
+        diff:click="save"
         diffyne:loading.class.opacity-50>
         Save
     </button>
     
     <button 
-        diffyne:click="delete"
+        diff:click="delete"
         diffyne:loading.class.opacity-50>
         Delete
     </button>
@@ -218,8 +218,8 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 ### Form with Multiple Buttons
 
 ```blade
-<form diffyne:submit="submit">
-    <input diffyne:model="name">
+<form diff:submit="submit">
+    <input diff:model="name">
     
     <button 
         type="submit"
@@ -229,7 +229,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
     
     <button 
         type="button"
-        diffyne:click="saveDraft"
+        diff:click="saveDraft"
         diffyne:loading.class.opacity-50>
         Save Draft
     </button>
@@ -244,7 +244,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 ### Complete Form with All Loading Features
 
 ```blade
-<form diffyne:submit="submit" class="relative">
+<form diff:submit="submit" class="relative">
     {{-- Loading overlay using .remove.hidden --}}
     <div diffyne:loading.remove.hidden
          class="absolute inset-0 bg-white bg-opacity-75 hidden flex items-center justify-center rounded-lg z-10">
@@ -257,8 +257,8 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
         </div>
     </div>
     
-    <input diffyne:model="name" class="mb-4">
-    <input diffyne:model="email" class="mb-4">
+    <input diff:model="name" class="mb-4">
+    <input diff:model="email" class="mb-4">
     
     {{-- Button with disabled attribute and spinner --}}
     <button
@@ -279,11 +279,11 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 ### Disabled Form During Loading
 
 ```blade
-<form diffyne:submit="submit">
+<form diff:submit="submit">
     <div diffyne:loading.class.opacity-50>
-        <input diffyne:model="name">
-        <input diffyne:model="email">
-        <textarea diffyne:model="message"></textarea>
+        <input diff:model="name">
+        <input diff:model="email">
+        <textarea diff:model="message"></textarea>
         
         <button type="submit">Submit</button>
     </div>
@@ -311,7 +311,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 }
 </style>
 
-<button diffyne:click="process">
+<button diff:click="process">
     <span diffyne:loading.remove>Process</span>
     <span diffyne:loading class="loading-dots">Processing</span>
 </button>
@@ -321,9 +321,9 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 
 ```blade
 <div>
-    <button diffyne:click="sendEmail">Send Email</button>
-    <button diffyne:click="generateReport">Generate Report</button>
-    <button diffyne:click="exportData">Export Data</button>
+    <button diff:click="sendEmail">Send Email</button>
+    <button diff:click="generateReport">Generate Report</button>
+    <button diff:click="exportData">Export Data</button>
     
     <div diffyne:loading class="mt-4 p-4 bg-blue-100 rounded">
         <p class="font-semibold">Processing your request</p>
@@ -338,19 +338,19 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 
 ```blade
 {{-- Opacity --}}
-<button diffyne:loading.class="opacity-50">
+<button diff:loading.class="opacity-50">
 
 {{-- Cursor --}}
-<button diffyne:loading.class="cursor-wait">
+<button diff:loading.class="cursor-wait">
 
 {{-- Background --}}
-<button diffyne:loading.class="bg-gray-400">
+<button diff:loading.class="bg-gray-400">
 
 {{-- Multiple classes --}}
-<button diffyne:loading.class="opacity-50 cursor-not-allowed scale-95">
+<button diff:loading.class="opacity-50 cursor-not-allowed scale-95">
 
 {{-- With transitions --}}
-<button class="transition-all" diffyne:loading.class="opacity-50 scale-95">
+<button class="transition-all" diff:loading.class="opacity-50 scale-95">
 ```
 
 ### Custom CSS
@@ -383,7 +383,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 Usage:
 
 ```blade
-<button diffyne:loading.class="btn-loading">
+<button diff:loading.class="btn-loading">
     Submit
 </button>
 ```
@@ -394,7 +394,7 @@ Usage:
 
 ```blade
 <button 
-    diffyne:click="save"
+    diff:click="save"
     diffyne:loading.attr.disabled
     class="disabled:opacity-50 disabled:cursor-not-allowed">
     Save
@@ -417,7 +417,7 @@ Prevents multiple clicks and duplicate requests.
 </button>
 
 {{-- Avoid - no feedback --}}
-<button diffyne:click="save">Save</button>
+<button diff:click="save">Save</button>
 ```
 
 ### 3. Use Appropriate Loading Messages
@@ -450,14 +450,14 @@ Better UX than spinners for content areas:
 ### 5. Combine with Form Validation
 
 ```blade
-<form diffyne:submit.prevent="submit">
-    <input diffyne:model.defer="email">
-    <span diffyne:error="email"></span>
+<form diff:submit.prevent="submit">
+    <input diff:model.defer="email">
+    <span diff:error="email"></span>
     
     <button 
         type="submit"
-        diffyne:loading.class="opacity-50"
-        diffyne:loading.attr="disabled">
+        diff:loading.class="opacity-50"
+        diff:loading.attr="disabled">
         <span diffyne:loading.remove>Submit</span>
         <span diffyne:loading>Submitting...</span>
     </button>
@@ -472,7 +472,7 @@ Ensure you're triggering a server request:
 
 ```blade
 {{-- This triggers server request - loading works --}}
-<button diffyne:click="save">
+<button diff:click="save">
 
 {{-- This doesn't - loading won't trigger --}}
 <button onclick="console.log('hi')">

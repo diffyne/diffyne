@@ -5,8 +5,8 @@ Handle form submissions with `diffyne:submit` directive.
 ## Basic Form Submission
 
 ```blade
-<form diffyne:submit="submit">
-    <input type="text" diffyne:model="name">
+<form diff:submit="submit">
+    <input type="text" diff:model="name">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -31,23 +31,23 @@ class ContactForm extends Component
 ## Form with Validation
 
 ```blade
-<form diffyne:submit="submit">
+<form diff:submit="submit">
     <div>
         <label>Email</label>
         <input 
             type="email" 
-            diffyne:model="email"
+            diff:model="email"
             class="border rounded px-3 py-2">
-        <span diffyne:error="email" class="text-red-500"></span>
+        <span diff:error="email" class="text-red-500"></span>
     </div>
     
     <div>
         <label>Password</label>
         <input 
             type="password" 
-            diffyne:model="password"
+            diff:model="password"
             class="border rounded px-3 py-2">
-        <span diffyne:error="password" class="text-red-500"></span>
+        <span diff:error="password" class="text-red-500"></span>
     </div>
     
     <button 
@@ -108,10 +108,10 @@ class LoginForm extends Component
 By default, `diffyne:model` updates local state and syncs with server on change events. For forms, this is typically what you want:
 
 ```blade
-<form diffyne:submit="createUser">
-    <input diffyne:model="name">
-    <input diffyne:model="email">
-    <input diffyne:model="phone">
+<form diff:submit="createUser">
+    <input diff:model="name">
+    <input diff:model="email">
+    <input diff:model="phone">
     <button type="submit">Create User</button>
 </form>
 ```
@@ -121,25 +121,25 @@ By default, `diffyne:model` updates local state and syncs with server on change 
 ## Multi-field Validation
 
 ```blade
-<form diffyne:submit="register">
+<form diff:submit="register">
     <div>
-        <input diffyne:model="username" placeholder="Username">
-        <span diffyne:error="username"></span>
+        <input diff:model="username" placeholder="Username">
+        <span diff:error="username"></span>
     </div>
     
     <div>
-        <input type="email" diffyne:model="email" placeholder="Email">
-        <span diffyne:error="email"></span>
+        <input type="email" diff:model="email" placeholder="Email">
+        <span diff:error="email"></span>
     </div>
     
     <div>
-        <input type="password" diffyne:model="password" placeholder="Password">
-        <span diffyne:error="password"></span>
+        <input type="password" diff:model="password" placeholder="Password">
+        <span diff:error="password"></span>
     </div>
     
     <div>
-        <input type="password" diffyne:model="passwordConfirmation" placeholder="Confirm Password">
-        <span diffyne:error="passwordConfirmation"></span>
+        <input type="password" diff:model="passwordConfirmation" placeholder="Confirm Password">
+        <span diff:error="passwordConfirmation"></span>
     </div>
     
     <button type="submit">Register</button>
@@ -189,8 +189,8 @@ class RegisterForm extends Component
 Reset form after successful submission:
 
 ```blade
-<form diffyne:submit="submit">
-    <input diffyne:model="message">
+<form diff:submit="submit">
+    <input diff:model="message">
     <button type="submit">Send</button>
 </form>
 
@@ -227,13 +227,13 @@ class MessageForm extends Component
 Validate individual fields as user types:
 
 ```blade
-<form diffyne:submit="submit">
+<form diff:submit="submit">
     <div>
         <input 
             type="email" 
-            diffyne:model.lazy="email"
-            diffyne:change="validateEmail">
-        <span diffyne:error="email"></span>
+            diff:model.lazy="email"
+            diff:change="validateEmail">
+        <span diff:error="email"></span>
     </div>
     
     <button type="submit">Submit</button>
@@ -272,21 +272,21 @@ class SignupForm extends Component
 ### Dynamic Fields
 
 ```blade
-<form diffyne:submit="submit">
+<form diff:submit="submit">
     @foreach($emails as $index => $email)
         <div>
             <input 
-                diffyne:model="emails.{{ $index }}"
+                diff:model="emails.{{ $index }}"
                 placeholder="Email {{ $index + 1 }}">
             <button 
                 type="button"
-                diffyne:click="removeEmail({{ $index }})">
+                diff:click="removeEmail({{ $index }})">
                 Remove
             </button>
         </div>
     @endforeach
     
-    <button type="button" diffyne:click="addEmail">Add Email</button>
+    <button type="button" diff:click="addEmail">Add Email</button>
     <button type="submit">Submit</button>
 </form>
 ```
@@ -323,7 +323,7 @@ class MultiEmailForm extends Component
 ### File Upload
 
 ```blade
-<form diffyne:submit="uploadFile">
+<form diff:submit="uploadFile">
     <input 
         type="file" 
         id="fileInput"
@@ -332,7 +332,7 @@ class MultiEmailForm extends Component
     <input 
         type="hidden" 
         id="fileName"
-        diffyne:model="fileName">
+        diff:model="fileName">
     
     <button type="submit">Upload</button>
 </form>
@@ -360,18 +360,18 @@ class FileUpload extends Component
 ### Conditional Fields
 
 ```blade
-<form diffyne:submit="submit">
-    <select diffyne:model.live="type">
+<form diff:submit="submit">
+    <select diff:model.live="type">
         <option value="individual">Individual</option>
         <option value="business">Business</option>
     </select>
     
     @if($type === 'individual')
-        <input diffyne:model="firstName" placeholder="First Name">
-        <input diffyne:model="lastName" placeholder="Last Name">
+        <input diff:model="firstName" placeholder="First Name">
+        <input diff:model="lastName" placeholder="Last Name">
     @else
-        <input diffyne:model="companyName" placeholder="Company Name">
-        <input diffyne:model="taxId" placeholder="Tax ID">
+        <input diff:model="companyName" placeholder="Company Name">
+        <input diff:model="taxId" placeholder="Tax ID">
     @endif
     
     <button type="submit">Submit</button>
@@ -417,8 +417,8 @@ class DynamicForm extends Component
 Show feedback during form submission:
 
 ```blade
-<form diffyne:submit="submit">
-    <input diffyne:model="email">
+<form diff:submit="submit">
+    <input diff:model="email">
     
     <button 
         type="submit"
@@ -439,20 +439,20 @@ Show feedback during form submission:
 
 ```blade
 {{-- Good - default behavior prevents reload --}}
-<form diffyne:submit="submit">
+<form diff:submit="submit">
 ```
 
 ### 2. Choose Model Binding Strategy
 
 ```blade
 {{-- Default: Updates local state, syncs on change --}}
-<form diffyne:submit="submit">
-    <input diffyne:model="field1">
-    <input diffyne:model="field2">
+<form diff:submit="submit">
+    <input diff:model="field1">
+    <input diff:model="field2">
 </form>
 
 {{-- Live updates: Immediate server sync --}}
-<input diffyne:model.live="search">
+<input diff:model.live="search">
 ```
 
 ### 3. Validate on Server

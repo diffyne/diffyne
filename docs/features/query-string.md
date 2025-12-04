@@ -309,8 +309,8 @@ Query string properties work seamlessly with forms:
 
 ```blade
 <form>
-    <input diffyne:model="search" placeholder="Search...">
-    <select diffyne:model="status">
+    <input diff:model="search" placeholder="Search...">
+    <select diff:model="status">
         <option value="all">All</option>
         <option value="active">Active</option>
     </select>

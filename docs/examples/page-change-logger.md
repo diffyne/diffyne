@@ -101,7 +101,7 @@ class PageChangeLogger extends Component
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold">Event Logger</h3>
         <button
-            diffyne:click="clearLogs"
+            diff:click="clearLogs"
             class="text-sm text-gray-600 hover:text-gray-800">
             Clear
         </button>
@@ -261,7 +261,7 @@ class PostList extends Component
         <div class="post-item">
             <h2>{{ $post['title'] }}</h2>
             <p>{{ $post['content'] }}</p>
-            <button diffyne:click="deletePost({{ $post['id'] }})">
+            <button diff:click="deletePost({{ $post['id'] }})">
                 Delete
             </button>
         </div>
@@ -269,8 +269,8 @@ class PostList extends Component
 
     <div class="pagination">
         <button 
-            diffyne:click="previousPage"
-            diffyne:loading.attr="disabled"
+            diff:click="previousPage"
+            diff:loading.attr="disabled"
             {{ $page <= 1 ? 'disabled' : '' }}>
             Previous
         </button>
@@ -278,8 +278,8 @@ class PostList extends Component
         <span>Page {{ $page }} of {{ $totalPages }}</span>
         
         <button 
-            diffyne:click="nextPage"
-            diffyne:loading.attr="disabled"
+            diff:click="nextPage"
+            diff:loading.attr="disabled"
             {{ $page >= $totalPages ? 'disabled' : '' }}>
             Next
         </button>

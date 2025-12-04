@@ -9,9 +9,9 @@ Diffyne provides automatic error handling with graceful fallbacks and user feedb
 Validation errors are automatically caught and displayed:
 
 ```blade
-<form diffyne:submit.prevent="submit">
-    <input diffyne:model.defer="email">
-    <span diffyne:error="email" class="text-red-500"></span>
+<form diff:submit.prevent="submit">
+    <input diff:model.defer="email">
+    <span diff:error="email" class="text-red-500"></span>
     
     <button type="submit">Submit</button>
 </form>
@@ -146,10 +146,10 @@ public function process()
 
 ```blade
 <div>
-    <input diffyne:model="email">
+    <input diff:model="email">
     
     {{-- Automatic error display --}}
-    <span diffyne:error="email" class="text-red-500"></span>
+    <span diff:error="email" class="text-red-500"></span>
     
     {{-- Or manual display --}}
     @error('email')
@@ -177,7 +177,7 @@ Diffyne adds `diffyne-error` class to fields with errors:
 
 ```blade
 <input 
-    diffyne:model="email"
+    diff:model="email"
     class="border rounded px-3 py-2
            @error('email') border-red-500 @enderror">
 ```
@@ -202,15 +202,15 @@ Diffyne adds `diffyne-error` class to fields with errors:
         </div>
     @endif
     
-    <form diffyne:submit.prevent="submit">
+    <form diff:submit.prevent="submit">
         {{-- Name field --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2">Name</label>
             <input 
                 type="text"
-                diffyne:model.defer="name"
+                diff:model.defer="name"
                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2">
-            <span diffyne:error="name" class="text-red-500 text-sm mt-1 block"></span>
+            <span diff:error="name" class="text-red-500 text-sm mt-1 block"></span>
         </div>
         
         {{-- Email field --}}
@@ -218,16 +218,16 @@ Diffyne adds `diffyne-error` class to fields with errors:
             <label class="block text-gray-700 font-bold mb-2">Email</label>
             <input 
                 type="email"
-                diffyne:model.defer="email"
+                diff:model.defer="email"
                 class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2">
-            <span diffyne:error="email" class="text-red-500 text-sm mt-1 block"></span>
+            <span diff:error="email" class="text-red-500 text-sm mt-1 block"></span>
         </div>
         
         {{-- Submit button --}}
         <button 
             type="submit"
-            diffyne:loading.class="opacity-50 cursor-not-allowed"
-            diffyne:loading.attr="disabled"
+            diff:loading.class="opacity-50 cursor-not-allowed"
+            diff:loading.attr="disabled"
             class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
             <span diffyne:loading.remove>Submit</span>
             <span diffyne:loading>Submitting...</span>

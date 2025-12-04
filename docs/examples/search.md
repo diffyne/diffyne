@@ -75,7 +75,7 @@ class UserSearch extends Component
             
             @if($search !== '')
                 <button 
-                    diffyne:click="clearSearch"
+                    diff:click="clearSearch"
                     class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                     ✕
                 </button>
@@ -269,7 +269,7 @@ public function loadResults()
 ```
 
 ```blade
-<select diffyne:model.live="role">
+<select diff:model.live="role">
     <option value="all">All Roles</option>
     <option value="admin">Admin</option>
     <option value="user">User</option>
@@ -310,9 +310,9 @@ public function previousPage()
 ```
 
 ```blade
-<button diffyne:click="previousPage">Previous</button>
+<button diff:click="previousPage">Previous</button>
 <span>Page {{ $page }}</span>
-<button diffyne:click="nextPage">Next</button>
+<button diff:click="nextPage">Next</button>
 ```
 
 ### Add Sort Options
@@ -344,10 +344,10 @@ public function loadResults()
 ```
 
 ```blade
-<button diffyne:click="sort('name')">
+<button diff:click="sort('name')">
     Name {{ $sortBy === 'name' ? ($sortDir === 'asc' ? '↑' : '↓') : '' }}
 </button>
-<button diffyne:click="sort('email')">
+<button diff:click="sort('email')">
     Email {{ $sortBy === 'email' ? ($sortDir === 'asc' ? '↑' : '↓') : '' }}
 </button>
 ```
@@ -403,7 +403,7 @@ private function addToHistory($term)
         <div class="flex gap-2">
             @foreach($recentSearches as $term)
                 <button 
-                    diffyne:click="search = '{{ $term }}'"
+                    diff:click="search = '{{ $term }}'"
                     class="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 text-sm">
                     {{ $term }}
                 </button>

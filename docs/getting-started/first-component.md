@@ -73,11 +73,11 @@ Edit `resources/views/diffyne/todo-list.blade.php`:
     <h2 class="text-2xl font-bold mb-4">My Todo List</h2>
     
     {{-- Add Todo Form --}}
-    <form diffyne:submit="addTodo" class="mb-4">
+    <form diff:submit="addTodo" class="mb-4">
         <div class="flex gap-2">
             <input 
                 type="text"
-                diffyne:model="newTodo"
+                diff:model="newTodo"
                 placeholder="Add a new todo..."
                 class="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -96,7 +96,7 @@ Edit `resources/views/diffyne/todo-list.blade.php`:
                 <li class="flex items-center justify-between p-3 bg-gray-50 rounded">
                     <span>{{ $todo }}</span>
                     <button 
-                        diffyne:click="removeTodo({{ $index }})"
+                        diff:click="removeTodo({{ $index }})"
                         class="text-red-500 hover:text-red-700">
                         ✕
                     </button>
@@ -105,7 +105,7 @@ Edit `resources/views/diffyne/todo-list.blade.php`:
         </ul>
         
         <button 
-            diffyne:click="clearAll"
+            diff:click="clearAll"
             class="w-full py-2 bg-gray-200 rounded hover:bg-gray-300">
             Clear All
         </button>
@@ -141,20 +141,20 @@ public function mount()
 
 #### diffyne:click
 ```blade
-<button diffyne:click="removeTodo({{ $index }})">✕</button>
+<button diff:click="removeTodo({{ $index }})">✕</button>
 ```
 Calls server method when clicked.
 
 #### diffyne:submit
 ```blade
-<form diffyne:submit="addTodo">
+<form diff:submit="addTodo">
 ```
 Handles form submission. Default form submission is automatically prevented.
 
 ### Data Binding
 
 ```blade
-<input diffyne:model="newTodo">
+<input diff:model="newTodo">
 ```
 
 - `diffyne:model` - Two-way binding
@@ -231,7 +231,7 @@ When you click "Add":
 ### Passing Parameters
 
 ```blade
-<button diffyne:click="removeTodo({{ $index }})">
+<button diff:click="removeTodo({{ $index }})">
 ```
 
 ```php
@@ -246,7 +246,7 @@ public function removeTodo($index)
 
 ```blade
 <button 
-    diffyne:click="addTodo"
+    diff:click="addTodo"
     diffyne:loading.class.opacity-50>
     Add
 </button>

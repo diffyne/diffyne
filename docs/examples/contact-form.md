@@ -75,7 +75,7 @@ class ContactForm extends Component
         </div>
     @endif
 
-    <form diffyne:submit.prevent="submit">
+    <form diff:submit.prevent="submit">
         {{-- Name Field --}}
         <div class="mb-4">
             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
@@ -84,11 +84,11 @@ class ContactForm extends Component
             <input 
                 type="text" 
                 id="name"
-                diffyne:model.defer="name"
+                diff:model.defer="name"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Your name"
             >
-            <span diffyne:error="name" class="text-red-500 text-sm mt-1 block"></span>
+            <span diff:error="name" class="text-red-500 text-sm mt-1 block"></span>
         </div>
 
         {{-- Email Field --}}
@@ -99,11 +99,11 @@ class ContactForm extends Component
             <input 
                 type="email" 
                 id="email"
-                diffyne:model.defer="email"
+                diff:model.defer="email"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="your.email@example.com"
             >
-            <span diffyne:error="email" class="text-red-500 text-sm mt-1 block"></span>
+            <span diff:error="email" class="text-red-500 text-sm mt-1 block"></span>
         </div>
 
         {{-- Message Field --}}
@@ -113,19 +113,19 @@ class ContactForm extends Component
             </label>
             <textarea 
                 id="message"
-                diffyne:model.defer="message"
+                diff:model.defer="message"
                 rows="4"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Your message here..."
             ></textarea>
-            <span diffyne:error="message" class="text-red-500 text-sm mt-1 block"></span>
+            <span diff:error="message" class="text-red-500 text-sm mt-1 block"></span>
         </div>
 
         {{-- Submit Button --}}
         <button 
             type="submit"
-            diffyne:loading.class="opacity-50 cursor-not-allowed"
-            diffyne:loading.attr="disabled"
+            diff:loading.class="opacity-50 cursor-not-allowed"
+            diff:loading.attr="disabled"
             class="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium">
             <span diffyne:loading.remove>Send Message</span>
             <span diffyne:loading>Sending...</span>
@@ -175,8 +175,8 @@ Provide user-friendly error messages.
 ### 3. Automatic Error Display
 
 ```blade
-<input diffyne:model.defer="name">
-<span diffyne:error="name" class="text-red-500"></span>
+<input diff:model.defer="name">
+<span diff:error="name" class="text-red-500"></span>
 ```
 
 The `diffyne:error` attribute automatically:
@@ -187,7 +187,7 @@ The `diffyne:error` attribute automatically:
 ### 4. Deferred Binding
 
 ```blade
-<input diffyne:model.defer="name">
+<input diff:model.defer="name">
 ```
 
 Using `.defer` means:
@@ -199,8 +199,8 @@ Using `.defer` means:
 
 ```blade
 <button 
-    diffyne:loading.class="opacity-50 cursor-not-allowed"
-    diffyne:loading.attr="disabled">
+    diff:loading.class="opacity-50 cursor-not-allowed"
+    diff:loading.attr="disabled">
     <span diffyne:loading.remove>Send Message</span>
     <span diffyne:loading>Sending...</span>
 </button>
@@ -332,7 +332,7 @@ public function submit()
 ### Add reCAPTCHA
 
 ```blade
-<form diffyne:submit.prevent="submit">
+<form diff:submit.prevent="submit">
     {{-- Form fields --}}
     
     <div class="g-recaptcha" data-sitekey="your-site-key"></div>
@@ -420,7 +420,7 @@ protected function rules(): array
 <input 
     type="hidden" 
     id="attachmentName"
-    diffyne:model.defer="attachment">
+    diff:model.defer="attachment">
 ```
 
 ### Add Subject Selection
@@ -439,7 +439,7 @@ protected function rules(): array
 ```
 
 ```blade
-<select diffyne:model.defer="subject">
+<select diff:model.defer="subject">
     <option value="general">General Inquiry</option>
     <option value="support">Technical Support</option>
     <option value="sales">Sales</option>
@@ -475,13 +475,13 @@ public function submit()
 
 ```blade
 {{-- Efficient - syncs once on submit --}}
-<input diffyne:model.defer="name">
+<input diff:model.defer="name">
 ```
 
 ### 4. Show Loading States
 
 ```blade
-<button diffyne:loading.attr="disabled">
+<button diff:loading.attr="disabled">
     <span diffyne:loading.remove>Send</span>
     <span diffyne:loading>Sending...</span>
 </button>

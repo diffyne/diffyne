@@ -51,7 +51,7 @@ class Counter extends Component
 ```blade
 <div>
     <h1>Count: {{ $count }}</h1>
-    <button diffyne:click="increment">Increment</button>
+    <button diff:click="increment">Increment</button>
 </div>
 ```
 
@@ -80,9 +80,9 @@ When the button is clicked, Diffyne sends only the minimal patch (~50 bytes) ins
 <input diffyne:model.live.debounce.300="search">
 
 {{-- Form with validation --}}
-<form diffyne:submit="submit">
-    <input diffyne:model="email">
-    <span diffyne:error="email"></span>
+<form diff:submit="submit">
+    <input diff:model="email">
+    <span diff:error="email"></span>
     <button type="submit" diffyne:loading.class.opacity-50>Submit</button>
 </form>
 ```

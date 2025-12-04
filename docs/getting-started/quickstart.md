@@ -62,13 +62,13 @@ Open `resources/views/diffyne/counter.blade.php`:
         
         <div class="space-x-4">
             <button 
-                diffyne:click="decrement"
+                diff:click="decrement"
                 class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
                 -
             </button>
             
             <button 
-                diffyne:click="increment"
+                diff:click="increment"
                 class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
                 +
             </button>
@@ -79,7 +79,7 @@ Open `resources/views/diffyne/counter.blade.php`:
 
 ### Key Concepts:
 - `{{ $count }}` displays the current count
-- `diffyne:click="increment"` calls the method on the server
+- `diff:click="increment"` calls the method on the server
 - Changes are automatically synced via Virtual DOM diff
 
 ## 4. Use Component

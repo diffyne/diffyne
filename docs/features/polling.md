@@ -5,7 +5,7 @@ Automatically refresh component data at regular intervals with `diffyne:poll`.
 ## Basic Usage
 
 ```blade
-<div diffyne:poll="5000" diffyne:poll.action="refresh">
+<div diff:poll="5000" diff:poll.action="refresh">
     Last updated: {{ $lastUpdate }}
 </div>
 ```
@@ -37,16 +37,16 @@ class Dashboard extends Component
 
 ```blade
 {{-- Poll every 1 second (1000ms) --}}
-<div diffyne:poll="1000" diffyne:poll.action="update">
+<div diff:poll="1000" diff:poll.action="update">
 
 {{-- Poll every 5 seconds (5000ms) --}}
-<div diffyne:poll="5000" diffyne:poll.action="update">
+<div diff:poll="5000" diff:poll.action="update">
 
 {{-- Poll every 30 seconds (30000ms) --}}
-<div diffyne:poll="30000" diffyne:poll.action="update">
+<div diff:poll="30000" diff:poll.action="update">
 
 {{-- Poll every 500 milliseconds --}}
-<div diffyne:poll="500" diffyne:poll.action="update">
+<div diff:poll="500" diff:poll.action="update">
 ```
 
 ### Default Action
@@ -55,7 +55,7 @@ If `diffyne:poll.action` is not specified, it defaults to calling `refresh()`:
 
 ```blade
 {{-- Calls refresh() every 2 seconds --}}
-<div diffyne:poll="2000">
+<div diff:poll="2000">
 ```
 
 ## Common Use Cases
@@ -63,7 +63,7 @@ If `diffyne:poll.action` is not specified, it defaults to calling `refresh()`:
 ### Real-time Dashboard
 
 ```blade
-<div class="dashboard" diffyne:poll="5000" diffyne:poll.action="refreshStats">
+<div class="dashboard" diff:poll="5000" diff:poll.action="refreshStats">
     <div class="stat-card">
         <h3>Active Users</h3>
         <p class="text-3xl">{{ $activeUsers }}</p>
@@ -129,7 +129,7 @@ class Dashboard extends Component
     </button>
 </div>
 
-<div diffyne:poll="10000" diffyne:poll.action="checkNotifications" class="hidden"></div>
+<div diff:poll="10000" diff:poll.action="checkNotifications" class="hidden"></div>
 ```
 
 Component:
@@ -158,7 +158,7 @@ class NotificationBadge extends Component
 ### Order Status Tracker
 
 ```blade
-<div diffyne:poll="3000" diffyne:poll.action="checkStatus">
+<div diff:poll="3000" diff:poll.action="checkStatus">
     <div class="mb-4">
         <h2 class="text-2xl font-bold">Order #{{ $orderId }}</h2>
         <p class="text-gray-600">Status: <span class="font-semibold">{{ $status }}</span></p>
@@ -217,7 +217,7 @@ class OrderTracker extends Component
 <div>
     <h3 class="text-xl font-bold mb-4">Recent Activity</h3>
     
-    <div diffyne:poll="5000" diffyne:poll.action="refreshActivity" class="space-y-3">
+    <div diff:poll="5000" diff:poll.action="refreshActivity" class="space-y-3">
         @foreach($activities as $activity)
             <div class="border-l-4 border-blue-500 pl-4 py-2">
                 <p class="font-semibold">{{ $activity->user->name }}</p>
@@ -266,7 +266,7 @@ class ActivityFeed extends Component
 Stop polling based on conditions:
 
 ```blade
-<div @if($status !== 'completed') diffyne:poll="3000" diffyne:poll.action="checkProgress" @endif>
+<div @if($status !== 'completed') diff:poll="3000" diff:poll.action="checkProgress" @endif>
     <div class="progress-bar">
         <div style="width: {{ $progress }}%"></div>
     </div>
@@ -364,7 +364,7 @@ public function checkStatus()
         diffyne:model.live.debounce.300="search"
         placeholder="Search...">
     
-    <div diffyne:poll="10000" diffyne:poll.action="refresh">
+    <div diff:poll="10000" diff:poll.action="refresh">
         @foreach($results as $result)
             <div>{{ $result->name }}</div>
         @endforeach
@@ -375,7 +375,7 @@ public function checkStatus()
 ### Polling + Loading States
 
 ```blade
-<div diffyne:poll="5000" diffyne:poll.action="refresh">
+<div diff:poll="5000" diff:poll.action="refresh">
     <div>
         {{-- Content --}}
     </div>
@@ -390,11 +390,11 @@ public function checkStatus()
 
 ```blade
 <div>
-    <button diffyne:click="refresh" class="mb-4">
+    <button diff:click="refresh" class="mb-4">
         Refresh Now
     </button>
     
-    <div diffyne:poll="30000" diffyne:poll.action="refresh">
+    <div diff:poll="30000" diff:poll.action="refresh">
         {{-- Content that auto-refreshes every 30s --}}
         {{-- Or can be manually refreshed --}}
     </div>
@@ -407,26 +407,26 @@ public function checkStatus()
 
 ```blade
 {{-- Fast updates for critical data (1 second = 1000ms) --}}
-<div diffyne:poll="1000" diffyne:poll.action="checkOrderStatus">
+<div diff:poll="1000" diff:poll.action="checkOrderStatus">
 
 {{-- Moderate updates for dashboards (5 seconds = 5000ms) --}}
-<div diffyne:poll="5000" diffyne:poll.action="refreshStats">
+<div diff:poll="5000" diff:poll.action="refreshStats">
 
 {{-- Slow updates for less critical data (30 seconds = 30000ms) --}}
-<div diffyne:poll="30000" diffyne:poll.action="checkNotifications">
+<div diff:poll="30000" diff:poll.action="checkNotifications">
 ```
 
 ### 2. Stop Polling When Done
 
 ```blade
 {{-- Only poll while processing --}}
-<div @if($status === 'processing') diffyne:poll="2000" diffyne:poll.action="checkStatus" @endif>
+<div @if($status === 'processing') diff:poll="2000" diff:poll.action="checkStatus" @endif>
 ```
 
 ### 3. Show Loading State
 
 ```blade
-<div diffyne:poll="5000" diffyne:poll.action="refresh">
+<div diff:poll="5000" diff:poll.action="refresh">
     {{-- Content --}}
     
     <small diffyne:loading class="text-gray-500">

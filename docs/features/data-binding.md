@@ -7,7 +7,7 @@ Two-way data binding with `diffyne:model` keeps your component properties in syn
 Bind an input to a component property:
 
 ```blade
-<input type="text" diffyne:model="username">
+<input type="text" diff:model="username">
 ```
 
 Component:
@@ -23,22 +23,22 @@ When the user types, `$username` updates automatically. When `$username` changes
 ### Text Input
 
 ```blade
-<input type="text" diffyne:model="name">
-<input type="email" diffyne:model="email">
-<input type="password" diffyne:model="password">
-<input type="number" diffyne:model="age">
+<input type="text" diff:model="name">
+<input type="email" diff:model="email">
+<input type="password" diff:model="password">
+<input type="number" diff:model="age">
 ```
 
 ### Textarea
 
 ```blade
-<textarea diffyne:model="description"></textarea>
+<textarea diff:model="description"></textarea>
 ```
 
 ### Checkbox
 
 ```blade
-<input type="checkbox" diffyne:model="active">
+<input type="checkbox" diff:model="active">
 ```
 
 Component:
@@ -50,8 +50,8 @@ public bool $active = false;
 ### Radio Buttons
 
 ```blade
-<input type="radio" diffyne:model="status" value="active"> Active
-<input type="radio" diffyne:model="status" value="inactive"> Inactive
+<input type="radio" diff:model="status" value="active"> Active
+<input type="radio" diff:model="status" value="inactive"> Inactive
 ```
 
 Component:
@@ -63,7 +63,7 @@ public string $status = 'active';
 ### Select
 
 ```blade
-<select diffyne:model="category">
+<select diff:model="category">
     <option value="all">All</option>
     <option value="active">Active</option>
     <option value="archived">Archived</option>
@@ -73,7 +73,7 @@ public string $status = 'active';
 ### Multiple Select
 
 ```blade
-<select multiple diffyne:model="tags">
+<select multiple diff:model="tags">
     <option value="php">PHP</option>
     <option value="laravel">Laravel</option>
     <option value="javascript">JavaScript</option>
@@ -93,7 +93,7 @@ public array $tags = [];
 Syncs on `change` event instead of `input`:
 
 ```blade
-<input diffyne:model.lazy="search">
+<input diff:model.lazy="search">
 ```
 
 **Use case:** Sync when input loses focus, not on every keystroke.
@@ -103,7 +103,7 @@ Syncs on `change` event instead of `input`:
 Syncs with server immediately on every input:
 
 ```blade
-<input diffyne:model.live="search">
+<input diff:model.live="search">
 ```
 
 **Use case:** Real-time search or filtering. Without `.live`, model only updates local state.
@@ -168,23 +168,23 @@ class UserSearch extends Component
 ### Contact Form
 
 ```blade
-<form diffyne:submit="submit">
+<form diff:submit="submit">
     <div>
         <label>Name</label>
-        <input diffyne:model="name">
-        <span diffyne:error="name"></span>
+        <input diff:model="name">
+        <span diff:error="name"></span>
     </div>
     
     <div>
         <label>Email</label>
-        <input type="email" diffyne:model="email">
-        <span diffyne:error="email"></span>
+        <input type="email" diff:model="email">
+        <span diff:error="email"></span>
     </div>
     
     <div>
         <label>Message</label>
-        <textarea diffyne:model="message"></textarea>
-        <span diffyne:error="message"></span>
+        <textarea diff:model="message"></textarea>
+        <span diff:error="message"></span>
     </div>
     
     <button type="submit" diffyne:loading.class.opacity-50>
@@ -227,19 +227,19 @@ class ContactForm extends Component
 
 ```blade
 <div>
-    <select diffyne:model.live="category">
+    <select diff:model.live="category">
         <option value="all">All Categories</option>
         <option value="electronics">Electronics</option>
         <option value="clothing">Clothing</option>
     </select>
     
-    <select diffyne:model.live="sort">
+    <select diff:model.live="sort">
         <option value="name">Name</option>
         <option value="price">Price</option>
     </select>
     
     <label>
-        <input type="checkbox" diffyne:model.live="inStock">
+        <input type="checkbox" diff:model.live="inStock">
         In Stock Only
     </label>
     
@@ -297,17 +297,17 @@ class ProductFilter extends Component
     @if($step === 1)
         <div>
             <h3>Step 1: Personal Info</h3>
-            <input diffyne:model="name" placeholder="Name">
-            <input diffyne:model="email" placeholder="Email">
-            <button diffyne:click="nextStep">Next</button>
+            <input diff:model="name" placeholder="Name">
+            <input diff:model="email" placeholder="Email">
+            <button diff:click="nextStep">Next</button>
         </div>
     @elseif($step === 2)
         <div>
             <h3>Step 2: Address</h3>
-            <input diffyne:model="address" placeholder="Address">
-            <input diffyne:model="city" placeholder="City">
-            <button diffyne:click="previousStep">Back</button>
-            <button diffyne:click="nextStep">Next</button>
+            <input diff:model="address" placeholder="Address">
+            <input diff:model="city" placeholder="City">
+            <button diff:click="previousStep">Back</button>
+            <button diff:click="nextStep">Next</button>
         </div>
     @else
         <div>
@@ -315,8 +315,8 @@ class ProductFilter extends Component
             <p>Name: {{ $name }}</p>
             <p>Email: {{ $email }}</p>
             <p>Address: {{ $address }}, {{ $city }}</p>
-            <button diffyne:click="previousStep">Back</button>
-            <button diffyne:click="submit">Submit</button>
+            <button diff:click="previousStep">Back</button>
+            <button diff:click="submit">Submit</button>
         </div>
     @endif
 </div>

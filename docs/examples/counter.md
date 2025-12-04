@@ -53,14 +53,14 @@ class Counter extends Component
         
         <div class="flex justify-center gap-4 mb-4">
             <button 
-                diffyne:click="decrement"
+                diff:click="decrement"
                 diffyne:loading.class.opacity-50
                 class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
                 -
             </button>
             
             <button 
-                diffyne:click="increment"
+                diff:click="increment"
                 diffyne:loading.class.opacity-50
                 class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
                 +
@@ -68,7 +68,7 @@ class Counter extends Component
         </div>
         
         <button 
-            diffyne:click="reset"
+            diff:click="reset"
             class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">
             Reset
         </button>
@@ -109,7 +109,7 @@ Public methods can be called from the browser using `diffyne:click`.
 ### 3. Event Binding
 
 ```blade
-<button diffyne:click="increment">+</button>
+<button diff:click="increment">+</button>
 ```
 
 When clicked:
@@ -125,7 +125,7 @@ When clicked:
 
 ```blade
 <button 
-    diffyne:click="increment"
+    diff:click="increment"
     diffyne:loading.class.opacity-50>
     +
 </button>
@@ -204,8 +204,8 @@ public function decrement()
 ```
 
 ```blade
-<input type="number" diffyne:model.live="step" min="1" max="10">
-<button diffyne:click="increment">+ {{ $step }}</button>
+<input type="number" diff:model.live="step" min="1" max="10">
+<button diff:click="increment">+ {{ $step }}</button>
 ```
 
 ### Add Limits

@@ -6,13 +6,13 @@ Diffyne provides a set of directives (special attributes) that enable reactive b
 
 | Directive | Purpose | Example |
 |-----------|---------|---------||
-| `diffyne:click` | Call method on click | `<button diffyne:click="save">` |
-| `diffyne:change` | Call method on change | `<select diffyne:change="updateFilter">` |
-| `diffyne:model` | Two-way data binding | `<input diffyne:model="name">` |
-| `diffyne:submit` | Handle form submission | `<form diffyne:submit="submit">` |
-| `diffyne:poll` | Poll server periodically | `<div diffyne:poll="5000">` |
+| `diffyne:click` | Call method on click | `<button diff:click="save">` |
+| `diffyne:change` | Call method on change | `<select diff:change="updateFilter">` |
+| `diffyne:model` | Two-way data binding | `<input diff:model="name">` |
+| `diffyne:submit` | Handle form submission | `<form diff:submit="submit">` |
+| `diffyne:poll` | Poll server periodically | `<div diff:poll="5000">` |
 | `diffyne:loading` | Show loading state | `<button diffyne:loading.class.opacity-50>` |
-| `diffyne:error` | Display validation errors | `<span diffyne:error="email">` |
+| `diffyne:error` | Display validation errors | `<span diff:error="email">` |
 
 ## Event Directives
 
@@ -21,8 +21,8 @@ Diffyne provides a set of directives (special attributes) that enable reactive b
 Triggers when element is clicked.
 
 ```blade
-<button diffyne:click="save">Save</button>
-<button diffyne:click="delete({{ $id }})">Delete</button>
+<button diff:click="save">Save</button>
+<button diff:click="delete({{ $id }})">Delete</button>
 ```
 
 **Note:** Event modifiers like `.prevent` or `.stop` are not supported. Handle event behavior in your component methods using the event parameter if needed.
@@ -34,12 +34,12 @@ Triggers when element is clicked.
 Triggers when form element value changes.
 
 ```blade
-<select diffyne:change="updateCategory">
+<select diff:change="updateCategory">
     <option value="all">All</option>
     <option value="active">Active</option>
 </select>
 
-<input type="checkbox" diffyne:change="toggleStatus">
+<input type="checkbox" diff:change="toggleStatus">
 ```
 
 ### diffyne:submit
@@ -47,8 +47,8 @@ Triggers when form element value changes.
 Handles form submission.
 
 ```blade
-<form diffyne:submit="submit">
-    <input type="text" diffyne:model="name">
+<form diff:submit="submit">
+    <input type="text" diff:model="name">
     <button type="submit">Submit</button>
 </form>
 ```
@@ -65,18 +65,18 @@ Creates two-way data binding between input and component property.
 
 ```blade
 {{-- Text input --}}
-<input type="text" diffyne:model="username">
+<input type="text" diff:model="username">
 
 {{-- Checkbox --}}
-<input type="checkbox" diffyne:model="active">
+<input type="checkbox" diff:model="active">
 
 {{-- Select --}}
-<select diffyne:model="category">
+<select diff:model="category">
     <option>Option 1</option>
 </select>
 
 {{-- Textarea --}}
-<textarea diffyne:model="description"></textarea>
+<textarea diff:model="description"></textarea>
 ```
 
 **Modifiers:**
@@ -87,13 +87,13 @@ Creates two-way data binding between input and component property.
 
 ```blade
 {{-- No modifiers: Updates local state only, syncs on change event --}}
-<input diffyne:model="search">
+<input diff:model="search">
 
 {{-- Sync on blur/change only --}}
-<input diffyne:model.lazy="email">
+<input diff:model.lazy="email">
 
 {{-- Sync immediately on every keystroke --}}
-<input diffyne:model.live="search">
+<input diff:model.live="search">
 
 {{-- Sync after 300ms of inactivity --}}
 <input diffyne:model.live.debounce.300="search">
@@ -110,20 +110,20 @@ Shows/hides elements or adds classes during server requests.
 ```blade
 {{-- Add class while loading --}}
 <button 
-    diffyne:click="save"
+    diff:click="save"
     diffyne:loading.class.opacity-50>
     Save
 </button>
 
 {{-- Multiple classes --}}
 <button 
-    diffyne:click="save"
+    diff:click="save"
     diffyne:loading.class.opacity-50.cursor-not-allowed>
     Save
 </button>
 
 {{-- Show loading spinner (default opacity/pointer-events) --}}
-<button diffyne:click="save">
+<button diff:click="save">
     Save
     <span diffyne:loading>
         <svg class="spinner">...</svg>
@@ -143,24 +143,24 @@ Automatically call a method at regular intervals.
 
 ```blade
 {{-- Poll every 5 seconds (5000ms) --}}
-<div diffyne:poll="5000" diffyne:poll.action="refresh">
+<div diff:poll="5000" diff:poll.action="refresh">
     Last updated: {{ $lastUpdate }}
 </div>
 
 {{-- Poll every 1 second with default action --}}
-<div diffyne:poll="1000">
+<div diff:poll="1000">
     Status: {{ $status }}
 </div>
 
 {{-- Poll every 2500 milliseconds --}}
-<div diffyne:poll="2500" diffyne:poll.action="updateData">
+<div diff:poll="2500" diff:poll.action="updateData">
     Data: {{ $data }}
 </div>
 ```
 
 **Attributes:**
-- `diffyne:poll="{milliseconds}"` - The interval in milliseconds (default: 2000)
-- `diffyne:poll.action="{method}"` - Method to call (default: 'refresh')
+- `diff:poll="{milliseconds}"` - The interval in milliseconds (default: 2000)
+- `diff:poll.action="{method}"` - Method to call (default: 'refresh')
 
 [Learn more about polling →](polling.md)
 
@@ -173,11 +173,11 @@ Automatically displays validation errors for a field.
 ```blade
 <input 
     type="email" 
-    diffyne:model="email"
+    diff:model="email"
     class="border">
 
 {{-- Error message appears here when validation fails --}}
-<span diffyne:error="email" class="text-red-500"></span>
+<span diff:error="email" class="text-red-500"></span>
 ```
 
 When validation fails, the error message is automatically inserted into the element.
@@ -190,13 +190,13 @@ Many directives support chaining modifiers:
 
 ```blade
 {{-- Form with prevent default --}}
-<form diffyne:submit.prevent="submit">
+<form diff:submit.prevent="submit">
 
 {{-- Model with live + debounce --}}
 <input diffyne:model.live.debounce.300="search">
 
 {{-- Click with stop propagation --}}
-<div diffyne:click.stop="handleClick">
+<div diff:click.stop="handleClick">
 ```
 
 ## Common Patterns
@@ -204,13 +204,13 @@ Many directives support chaining modifiers:
 ### Form with Validation
 
 ```blade
-<form diffyne:submit="submit">
+<form diff:submit="submit">
     <div>
         <input 
             type="email" 
-            diffyne:model="email"
+            diff:model="email"
             class="border">
-        <span diffyne:error="email"></span>
+        <span diff:error="email"></span>
     </div>
     
     <button 
@@ -244,7 +244,7 @@ Many directives support chaining modifiers:
 ### Real-time Dashboard
 
 ```blade
-<div diffyne:poll="5000" diffyne:poll.action="refreshStats">
+<div diff:poll="5000" diff:poll.action="refreshStats">
     <div>Active Users: {{ $activeUsers }}</div>
     <div>Revenue: ${{ $revenue }}</div>
     
