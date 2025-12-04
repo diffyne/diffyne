@@ -50,6 +50,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Security Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Security settings for Diffyne components.
+    |
+    */
+
+    'security' => [
+        // HMAC signing key for state verification (defaults to APP_KEY)
+        'signing_key' => env('DIFFYNE_SIGNING_KEY'),
+
+        // Verify state signature on every request (recommended: true)
+        'verify_state' => env('DIFFYNE_VERIFY_STATE', true),
+
+        // Rate limiting for component updates (requests per minute)
+        'rate_limit' => env('DIFFYNE_RATE_LIMIT', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | View Path
     |--------------------------------------------------------------------------
     |

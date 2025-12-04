@@ -54,6 +54,7 @@ class PatchSerializer
                 'p' => $patches, // patches
                 'st' => $response['state'] ?? [], // state (always send for sync)
                 'f' => $response['fingerprint'] ?? null, // fingerprint
+                'sig' => $response['signature'] ?? null, // signature
             ],
         ];
 

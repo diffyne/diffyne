@@ -5,6 +5,7 @@ namespace Diffyne\Http\Controllers;
 use BadMethodCallException;
 use Diffyne\DiffyneManager;
 use Diffyne\Exceptions\RedirectException;
+use Diffyne\Security\StateSigner;
 use Diffyne\State\ComponentHydrator;
 use Diffyne\VirtualDOM\PatchSerializer;
 use Diffyne\VirtualDOM\Renderer;
@@ -48,6 +49,7 @@ class DiffyneController extends Controller
             $componentId = $request->input('componentId');
             $state = $request->input('state', []);
             $fingerprint = $request->input('fingerprint');
+            $signature = $request->input('signature');
 
             // Validate request
             if (! $componentId || ! $state) {
@@ -55,6 +57,30 @@ class DiffyneController extends Controller
                     'success' => false,
                     'error' => 'Invalid request',
                 ], 400);
+            }
+
+            // Verify state signature
+            if (config('diffyne.security.verify_state', true)) {
+                if (! $signature) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Missing state signature',
+                    ], 400);
+                }
+
+                // State comes from request with empty strings as null (Laravel behavior)
+                // Signature was generated with empty strings as null, so they match
+                if (! StateSigner::verify($state, $componentId, $signature)) {
+                    Log::warning('Invalid state signature detected', [
+                        'component_id' => $componentId,
+                        'ip' => $request->ip(),
+                    ]);
+
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Invalid state signature. State may have been tampered with.',
+                    ], 403);
+                }
             }
 
             // Get component class from state or registry

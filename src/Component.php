@@ -2,6 +2,9 @@
 
 namespace Diffyne;
 
+use Diffyne\Attributes\Computed;
+use Diffyne\Attributes\Invokable;
+use Diffyne\Attributes\Locked;
 use Diffyne\Attributes\On;
 use Diffyne\Attributes\QueryString;
 use Illuminate\Support\Facades\Validator;
@@ -35,6 +38,16 @@ abstract class Component
      * Component properties that should be tracked for changes.
      */
     protected array $tracked = [];
+
+    /**
+     * Properties that are locked (cannot be updated from client).
+     */
+    protected array $locked = [];
+
+    /**
+     * Properties that are computed (derived, not stored).
+     */
+    protected array $computed = [];
 
     /**
      * Component properties that should be synced with URL query string.
@@ -96,14 +109,30 @@ abstract class Component
 
         foreach ($properties as $property) {
             if (! $property->isStatic() && $property->getName() !== 'id') {
-                $this->tracked[] = $property->getName();
+                $propertyName = $property->getName();
+                
+                // Check for Computed attribute
+                $computedAttrs = $property->getAttributes(Computed::class);
+                if (! empty($computedAttrs)) {
+                    $this->computed[] = $propertyName;
+                    $this->hidden[] = $propertyName; // Computed properties are also hidden from state
+                    continue; // Don't track computed properties
+                }
+                
+                // Check for Locked attribute
+                $lockedAttrs = $property->getAttributes(Locked::class);
+                if (! empty($lockedAttrs)) {
+                    $this->locked[] = $propertyName;
+                }
+                
+                $this->tracked[] = $propertyName;
 
                 // Check for QueryString attribute
                 $attributes = $property->getAttributes(QueryString::class);
                 if (! empty($attributes)) {
                     $urlAttr = $attributes[0]->newInstance();
-                    $this->urlProperties[$property->getName()] = [
-                        'as' => $urlAttr->as ?? $property->getName(),
+                    $this->urlProperties[$propertyName] = [
+                        'as' => $urlAttr->as ?? $propertyName,
                         'history' => $urlAttr->history,
                         'keep' => $urlAttr->keep,
                     ];
@@ -242,6 +271,14 @@ abstract class Component
             throw new \InvalidArgumentException("Property [{$property}] is protected and cannot be updated.");
         }
 
+        if (in_array($property, $this->locked)) {
+            throw new \InvalidArgumentException("Property [{$property}] is locked and cannot be updated from client.");
+        }
+
+        if (in_array($property, $this->computed)) {
+            throw new \InvalidArgumentException("Property [{$property}] is computed and cannot be updated.");
+        }
+
         $this->updating($property, $value);
 
         $this->$property = $value;
@@ -258,8 +295,12 @@ abstract class Component
             throw new \BadMethodCallException("Method [{$method}] does not exist on component.");
         }
 
-        if (str_starts_with($method, '__') || in_array($method, $this->getProtectedMethods())) {
-            throw new \BadMethodCallException("Method [{$method}] cannot be called.");
+        // Check if method is explicitly marked as invokable
+        $reflection = new \ReflectionMethod($this, $method);
+        $invokableAttrs = $reflection->getAttributes(Invokable::class);
+        
+        if (empty($invokableAttrs)) {
+            throw new \BadMethodCallException("Method [{$method}] is not invokable. Add #[Invokable] attribute to allow client invocation.");
         }
 
         return $this->$method(...$params);

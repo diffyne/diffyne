@@ -3,6 +3,7 @@
 namespace Diffyne\VirtualDOM;
 
 use Diffyne\Component;
+use Diffyne\Security\StateSigner;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\View as IlluminateView;
@@ -38,11 +39,17 @@ class Renderer
         // Store snapshot for future diffs
         $this->snapshots[$component->id] = $vdom;
 
+        $state = $component->getState();
+        
+        // Normalize state for signature generation (convert empty strings to null to match request format)
+        $normalizedState = $this->normalizeStateForSigning($state);
+        
         return [
             'id' => $component->id,
             'html' => $html,
-            'state' => $component->getState(),
+            'state' => $state,
             'fingerprint' => $component->calculateFingerprint(),
+            'signature' => StateSigner::sign($normalizedState, $component->id),
             'eventListeners' => $component->getEventListeners(),
         ];
     }
@@ -63,11 +70,17 @@ class Renderer
 
         $this->snapshots[$component->id] = $newVdom;
 
+        $state = $component->getState();
+        
+        // Normalize state for signature generation (convert empty strings to null to match request format)
+        $normalizedState = $this->normalizeStateForSigning($state);
+
         $result = [
             'id' => $component->id,
             'patches' => $patches,
-            'state' => $component->getState(),
+            'state' => $state,
             'fingerprint' => $component->calculateFingerprint(),
+            'signature' => StateSigner::sign($normalizedState, $component->id),
         ];
 
         // Include errors if any exist
@@ -102,7 +115,25 @@ class Renderer
     }
 
     /**
-     * Render the component's view to HTML.
+     * Normalize state for signature generation.
+     * Converts empty strings to null to match how Laravel receives them from requests.
+     */
+    protected function normalizeStateForSigning(array $state): array
+    {
+        foreach ($state as $key => $value) {
+            if ($value === '') {
+                // Empty strings become null in Laravel request input
+                $state[$key] = null;
+            } elseif (is_array($value)) {
+                $state[$key] = $this->normalizeStateForSigning($value);
+            }
+        }
+        
+        return $state;
+    }
+
+    /**
+     * Render component view to HTML.
      */
     protected function renderComponentView(Component $component): string
     {

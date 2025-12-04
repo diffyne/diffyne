@@ -79,8 +79,11 @@ export class EventBinder {
                     }
                     
                     target._diffyneModelHandler(target.value);
-                } else {
-                    // Just update local state without sending request
+                } else if (target.tagName !== 'SELECT' && 
+                           target.type !== 'checkbox' && 
+                           target.type !== 'radio') {
+                    // Only update local state for text inputs that won't trigger server request on change
+                    // SELECT, checkbox, radio always trigger server requests, so don't update local state
                     this.localStateHandler(componentId, modifiers.property, target.value);
                 }
             }

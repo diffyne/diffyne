@@ -99,6 +99,7 @@ export class Diffyne {
         const componentName = element.getAttribute('diff:name');
         const state = parseJSON(element.getAttribute('diff:state') || '{}');
         const fingerprint = element.getAttribute('diff:fingerprint');
+        const signature = element.getAttribute('diff:signature');
         const eventListeners = parseJSON(element.getAttribute('diff:listeners') || '{}');
 
         this.registry.register(id, {
@@ -108,6 +109,7 @@ export class Diffyne {
             element,
             state,
             fingerprint,
+            signature,
             vdom: this.vNodeConverter.buildVDOM(element),
         });
 
@@ -236,7 +238,8 @@ export class Diffyne {
                 method,
                 params,
                 state: component.state,
-                fingerprint: component.fingerprint
+                fingerprint: component.fingerprint,
+                signature: component.signature
             });
 
             this.processResponse(componentId, response);
@@ -254,18 +257,21 @@ export class Diffyne {
         const component = this.registry.get(componentId);
         if (!component) return;
 
-        // Optimistic update
-        component.updateState({ [property]: value });
+        // Store the original state and signature before any updates
+        const originalState = { ...component.state };
+        const originalSignature = component.signature;
 
         try {
+            // Send request with ORIGINAL state (before optimistic update)
             const response = await this.transport.send({
                 type: 'update',
                 componentId,
                 componentClass: component.componentClass,
                 property,
                 value,
-                state: component.state,
-                fingerprint: component.fingerprint
+                state: originalState, // Original state
+                fingerprint: component.fingerprint,
+                signature: originalSignature // Original signature matches original state
             });
 
             this.processResponse(componentId, response);
@@ -303,6 +309,7 @@ export class Diffyne {
         const patches = componentData.p || componentData.patches || [];
         const state = componentData.st || componentData.state;
         const fingerprint = componentData.f || componentData.fingerprint;
+        const signature = componentData.sig || componentData.signature;
         const errors = componentData.e || componentData.errors;
         const queryString = componentData.q || componentData.queryString;
 
@@ -320,6 +327,10 @@ export class Diffyne {
         
         if (fingerprint) {
             component.updateFingerprint(fingerprint);
+        }
+
+        if (signature) {
+            component.updateSignature(signature);
         }
 
         if (queryString) {

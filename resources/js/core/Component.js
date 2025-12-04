@@ -11,6 +11,7 @@ export class Component {
         this.element = data.element;
         this.state = data.state || {};
         this.fingerprint = data.fingerprint;
+        this.signature = data.signature;
         this.vdom = data.vdom;
         this.errors = {};
     }
@@ -29,6 +30,14 @@ export class Component {
     updateFingerprint(fingerprint) {
         this.fingerprint = fingerprint;
         this.element.setAttribute('diff:fingerprint', fingerprint);
+    }
+
+    /**
+     * Update signature
+     */
+    updateSignature(signature) {
+        this.signature = signature;
+        this.element.setAttribute('diff:signature', signature);
     }
 
     /**
