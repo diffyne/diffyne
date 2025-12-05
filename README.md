@@ -36,10 +36,14 @@ php artisan make:diffyne Counter
 
 **Component Class** (`app/Diffyne/Counter.php`):
 ```php
+use Diffyne\Attributes\Invokable;
+use Diffyne\Component;
+
 class Counter extends Component
 {
     public int $count = 0;
 
+    #[Invokable]
     public function increment()
     {
         $this->count++;
