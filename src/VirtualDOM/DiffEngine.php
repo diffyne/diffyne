@@ -159,20 +159,32 @@ class DiffEngine
     {
         $oldCount = count($oldChildren);
         $newCount = count($newChildren);
-        $maxCount = max($oldCount, $newCount);
 
         // Check if we can use keyed diffing
         $oldKeyed = $this->extractKeyedNodes($oldChildren);
         $newKeyed = $this->extractKeyedNodes($newChildren);
 
-        if (! empty($oldKeyed) && ! empty($newKeyed)) {
+        // Use keyed diffing if at least one list has keys (even if the other is empty)
+        if (! empty($oldKeyed) || ! empty($newKeyed)) {
+            // If old list has keys but new doesn't (or vice versa), still use keyed diffing
+            // This handles cases where list goes from keyed to empty or vice versa
             $this->diffKeyedChildren($oldChildren, $newChildren, $parentPath, $oldKeyed, $newKeyed);
 
             return;
         }
 
-        // Simple index-based diffing
-        for ($i = 0; $i < $maxCount; $i++) {
+        // Simple index-based diffing (no keys)
+        $maxCount = max($oldCount, $newCount);
+        
+        // First, remove excess old children (in reverse order to avoid index shifting)
+        if ($oldCount > $newCount) {
+            for ($i = $oldCount - 1; $i >= $newCount; $i--) {
+                $this->diffNodes($oldChildren[$i], null, [...$parentPath, $i]);
+            }
+        }
+
+        // Then diff/create/update remaining children
+        for ($i = 0; $i < $newCount; $i++) {
             $oldChild = $oldChildren[$i] ?? null;
             $newChild = $newChildren[$i] ?? null;
             $childPath = [...$parentPath, $i];

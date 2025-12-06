@@ -14,13 +14,82 @@ export class PatchApplier {
      * Apply all patches to a component
      */
     applyPatches(contentRoot, patches) {
+        if (!contentRoot) {
+            console.error('[PatchApplier] Content root is null, cannot apply patches');
+            return;
+        }
+
+        if (!patches || patches.length === 0) {
+            return;
+        }
+
         // Check for full replacement
         if (this.isFullReplacement(patches)) {
             return this.replaceContent(contentRoot, patches[0]);
         }
 
-        // Apply individual patches
-        patches.forEach(patch => this.applyPatch(contentRoot, patch));
+        // Apply individual patches in correct order:
+        // 1. Removes first (in reverse index order to avoid shifting)
+        // 2. Then creates/updates/replaces
+        const removePatches = [];
+        const otherPatches = [];
+
+        patches.forEach(patch => {
+            const type = this.expandType(patch.t || patch.type);
+            if (type === 'remove') {
+                removePatches.push(patch);
+            } else {
+                otherPatches.push(patch);
+            }
+        });
+
+        // Sort removes by path in reverse order (highest index first)
+        // This prevents index shifting when removing multiple items
+        removePatches.sort((a, b) => {
+            const pathA = a.p || a.path || [];
+            const pathB = b.p || b.path || [];
+            
+            // Compare paths from end to start (reverse order)
+            const minLen = Math.min(pathA.length, pathB.length);
+            for (let i = minLen - 1; i >= 0; i--) {
+                if (pathA[i] !== pathB[i]) {
+                    return pathB[i] - pathA[i]; // Reverse order (higher index first)
+                }
+            }
+            return pathB.length - pathA.length;
+        });
+
+        // Sort other patches by depth (deepest first) for creates/updates
+        otherPatches.sort((a, b) => {
+            const pathA = a.p || a.path || [];
+            const pathB = b.p || b.path || [];
+            return pathB.length - pathA.length;
+        });
+
+        try {
+            // Apply removes first (in reverse order)
+            removePatches.forEach((patch, index) => {
+                try {
+                    this.applyPatch(contentRoot, patch);
+                } catch (error) {
+                    console.error(`[PatchApplier] Failed to apply remove patch ${index}:`, patch, error);
+                    throw error;
+                }
+            });
+
+            // Then apply creates/updates/replaces
+            otherPatches.forEach((patch, index) => {
+                try {
+                    this.applyPatch(contentRoot, patch);
+                } catch (error) {
+                    console.error(`[PatchApplier] Failed to apply patch ${index}:`, patch, error);
+                    throw error;
+                }
+            });
+        } catch (error) {
+            console.error('[PatchApplier] Patch application failed:', error);
+            throw error;
+        }
     }
 
     /**
@@ -52,7 +121,7 @@ export class PatchApplier {
      */
     applyPatch(root, patch) {
         const type = this.expandType(patch.t || patch.type);
-        const path = patch.p || patch.path;
+        const path = patch.p || patch.path || [];
         const data = patch.d || patch.data;
         
         let target, insertIndex;
@@ -66,7 +135,10 @@ export class PatchApplier {
             insertIndex = null;
         }
 
-        if (!target) return;
+        if (!target) {
+            console.warn(`[PatchApplier] Target node not found for patch type ${type} at path ${path.join('.')}`);
+            return;
+        }
 
         switch (type) {
             case 'create':
@@ -109,10 +181,17 @@ export class PatchApplier {
      * Get DOM node by path
      */
     getNodeByPath(root, path) {
+        if (!path || path.length === 0) {
+            return root;
+        }
+
         let node = root;
 
         for (const index of path) {
-            if (!node) return null;
+            if (!node) {
+                console.warn(`[PatchApplier] Node not found at path ${path.join('.')}, index ${index}`);
+                return null;
+            }
             
             const meaningfulChildren = Array.from(node.childNodes).filter(child => {
                 if (child.nodeType === Node.TEXT_NODE) {
@@ -121,7 +200,11 @@ export class PatchApplier {
                 return true;
             });
             
-            if (!meaningfulChildren[index]) return null;
+            if (index < 0 || index >= meaningfulChildren.length) {
+                console.warn(`[PatchApplier] Index ${index} out of bounds (${meaningfulChildren.length} children) at path ${path.join('.')}`);
+                return null;
+            }
+            
             node = meaningfulChildren[index];
         }
 
@@ -157,7 +240,17 @@ export class PatchApplier {
      * Remove node
      */
     patchRemove(node) {
-        node.parentNode?.removeChild(node);
+        if (!node || !node.parentNode) {
+            console.warn('[PatchApplier] Cannot remove node - node or parent is null');
+            return;
+        }
+        
+        try {
+            node.parentNode.removeChild(node);
+        } catch (error) {
+            console.error('[PatchApplier] Failed to remove node:', error, node);
+            // Don't throw - continue with other patches
+        }
     }
 
     /**
