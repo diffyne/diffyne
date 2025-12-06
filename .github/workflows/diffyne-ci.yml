@@ -2,13 +2,11 @@ name: Diffyne CI
 
 on:
   pull_request:
-    paths:
-      - 'packages/diffyne/**'
+    branches:
+      - main
   push:
     branches:
       - main
-    paths:
-      - 'packages/diffyne/**'
 
 jobs:
   ci:
