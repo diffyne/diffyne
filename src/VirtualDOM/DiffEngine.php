@@ -175,7 +175,7 @@ class DiffEngine
 
         // Simple index-based diffing (no keys)
         $maxCount = max($oldCount, $newCount);
-        
+
         // First, remove excess old children (in reverse order to avoid index shifting)
         if ($oldCount > $newCount) {
             for ($i = $oldCount - 1; $i >= $newCount; $i--) {
