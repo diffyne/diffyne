@@ -9,14 +9,18 @@ on:
       - main
 
 jobs:
-  ci:
-    name: PHPStan, Format Check & Tests
+  static-analysis:
+    name: PHPStan Static Analysis (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
     environment: 
       name: ci-approval
     permissions:
       contents: read
       pull-requests: write
+
+    strategy:
+      matrix:
+        php: ['8.3', '8.4']
 
     steps:
       - name: Checkout code
@@ -25,20 +29,102 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
           coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ matrix.php }}-composer
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php }}-composer-
 
       - name: Install Composer dependencies
         run: |
           composer install --prefer-dist --no-interaction --no-progress
 
       - name: Run PHPStan
-        run: composer analyse
+        run: |
+          composer analyse
+
+  format-check:
+    name: Code Formatting Check (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    environment: 
+      name: ci-approval
+    permissions:
+      contents: read
+      pull-requests: write
+
+    strategy:
+      matrix:
+        php: ['8.3', '8.4']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ matrix.php }}-composer
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php }}-composer-
+
+      - name: Install Composer dependencies
+        run: |
+          composer install --prefer-dist --no-interaction --no-progress
 
       - name: Check code formatting
-        run: composer format:test
+        run: |
+          composer format:test
+
+  test:
+    name: Run Tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    environment: 
+      name: ci-approval
+    permissions:
+      contents: read
+      pull-requests: write
+
+    strategy:
+      matrix:
+        php: ['8.3', '8.4']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ matrix.php }}-composer
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php }}-composer-
+
+      - name: Install Composer dependencies
+        run: |
+          composer install --prefer-dist --no-interaction --no-progress
 
       - name: Run tests
-        run: composer test
-
+        run: |
+          composer test
