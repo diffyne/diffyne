@@ -13,17 +13,20 @@ A simple counter to demonstrate basic Diffyne concepts.
 
 namespace App\Diffyne;
 
+use Diffyne\Attributes\Invokable;
 use Diffyne\Component;
 
 class Counter extends Component
 {
     public int $count = 0;
     
+    #[Invokable]
     public function increment()
     {
         $this->count++;
     }
     
+    #[Invokable]
     public function decrement()
     {
         if ($this->count > 0) {
@@ -31,6 +34,7 @@ class Counter extends Component
         }
     }
     
+    #[Invokable]
     public function reset()
     {
         $this->count = 0;
@@ -186,14 +190,18 @@ Compare to full HTML approach (~200 bytes):
 ### Add Step Size
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public int $count = 0;
 public int $step = 1;
 
+#[Invokable]
 public function increment()
 {
     $this->count += $this->step;
 }
 
+#[Invokable]
 public function decrement()
 {
     $this->count -= $this->step;
@@ -211,10 +219,13 @@ public function decrement()
 ### Add Limits
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public int $count = 0;
 public int $min = 0;
 public int $max = 100;
 
+#[Invokable]
 public function increment()
 {
     if ($this->count < $this->max) {
@@ -222,6 +233,7 @@ public function increment()
     }
 }
 
+#[Invokable]
 public function decrement()
 {
     if ($this->count > $this->min) {

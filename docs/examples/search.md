@@ -14,6 +14,7 @@ A live search component with debouncing and real-time results.
 namespace App\Diffyne;
 
 use App\Models\User;
+use Diffyne\Attributes\Invokable;
 use Diffyne\Component;
 
 class UserSearch extends Component
@@ -47,6 +48,7 @@ class UserSearch extends Component
         }
     }
     
+    #[Invokable]
     public function clearSearch()
     {
         $this->search = '';
@@ -127,7 +129,7 @@ class UserSearch extends Component
 ### Usage
 
 ```blade
-<diffyne:user-search />
+@diffyne('UserSearch')
 ```
 
 ## How It Works
@@ -224,6 +226,9 @@ Shows automatically while server is processing the request.
 ### Clearing Search
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function clearSearch()
 {
     $this->search = '';
@@ -280,6 +285,8 @@ public function loadResults()
 ### Add Pagination
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public int $page = 1;
 public int $perPage = 10;
 
@@ -294,12 +301,14 @@ public function loadResults()
         ->toArray();
 }
 
+#[Invokable]
 public function nextPage()
 {
     $this->page++;
     $this->loadResults();
 }
 
+#[Invokable]
 public function previousPage()
 {
     if ($this->page > 1) {
@@ -318,9 +327,12 @@ public function previousPage()
 ### Add Sort Options
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public string $sortBy = 'name';
 public string $sortDir = 'asc';
 
+#[Invokable]
 public function sort($field)
 {
     if ($this->sortBy === $field) {

@@ -235,6 +235,9 @@ When you click "Add":
 ```
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function removeTodo($index)
 {
     unset($this->todos[$index]);

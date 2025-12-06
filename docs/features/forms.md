@@ -14,10 +14,13 @@ Handle form submissions with `diff:submit` directive.
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 class ContactForm extends Component
 {
     public string $name = '';
     
+    #[Invokable]
     public function submit()
     {
         // Handle form submission
@@ -67,6 +70,8 @@ class ContactForm extends Component
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 class LoginForm extends Component
 {
     public string $email = '';
@@ -89,6 +94,7 @@ class LoginForm extends Component
         ];
     }
     
+    #[Invokable]
     public function submit()
     {
         $validated = $this->validate();
@@ -202,11 +208,14 @@ Reset form after successful submission:
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 class MessageForm extends Component
 {
     public string $message = '';
     public bool $sent = false;
     
+    #[Invokable]
     public function submit()
     {
         $this->validate(['message' => 'required|min:10']);
@@ -243,10 +252,13 @@ Validate individual fields as user types:
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 class SignupForm extends Component
 {
     public string $email = '';
     
+    #[Invokable]
     public function validateEmail()
     {
         $this->validateOnly('email');
@@ -259,6 +271,7 @@ class SignupForm extends Component
         ];
     }
     
+    #[Invokable]
     public function submit()
     {
         $this->validate();
@@ -294,21 +307,26 @@ class SignupForm extends Component
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 class MultiEmailForm extends Component
 {
     public array $emails = [''];
     
+    #[Invokable]
     public function addEmail()
     {
         $this->emails[] = '';
     }
     
+    #[Invokable]
     public function removeEmail($index)
     {
         unset($this->emails[$index]);
         $this->emails = array_values($this->emails);
     }
     
+    #[Invokable]
     public function submit()
     {
         $this->validate([
@@ -404,6 +422,7 @@ class DynamicForm extends Component
         ];
     }
     
+    #[Invokable]
     public function submit()
     {
         $this->validate();
@@ -458,6 +477,9 @@ Show feedback during form submission:
 ### 3. Validate on Server
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function submit()
 {
     // Always validate server-side
@@ -483,6 +505,9 @@ public function submit()
 ### 5. Handle Errors Gracefully
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function submit()
 {
     try {

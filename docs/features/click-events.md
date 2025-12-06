@@ -13,6 +13,9 @@ Call a component method when an element is clicked:
 In your component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function save()
 {
     // Handle save logic
@@ -33,16 +36,21 @@ public function save()
 Component methods:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function delete($id)
 {
     $this->items = array_filter($this->items, fn($item) => $item['id'] !== $id);
 }
 
+#[Invokable]
 public function setStatus($status)
 {
     $this->status = $status;
 }
 
+#[Invokable]
 public function calculate($a, $b)
 {
     $this->result = $a + $b;
@@ -122,6 +130,9 @@ Use Blade conditionals to control behavior:
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function delete()
 {
     // Will only run if user confirms
@@ -141,8 +152,11 @@ public function delete()
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public bool $isActive = false;
 
+#[Invokable]
 public function toggle()
 {
     $this->isActive = !$this->isActive;
@@ -166,14 +180,18 @@ public function toggle()
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public array $items = [];
 public int $editingIndex = -1;
 
+#[Invokable]
 public function edit($index)
 {
     $this->editingIndex = $index;
 }
 
+#[Invokable]
 public function remove($index)
 {
     unset($this->items[$index]);
@@ -194,13 +212,17 @@ public function remove($index)
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public int $count = 0;
 
+#[Invokable]
 public function increment()
 {
     $this->count++;
 }
 
+#[Invokable]
 public function decrement()
 {
     if ($this->count > 0) {
@@ -232,9 +254,12 @@ public function decrement()
 Component:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public int $page = 1;
 public int $totalPages = 10;
 
+#[Invokable]
 public function nextPage()
 {
     if ($this->page < $this->totalPages) {
@@ -242,6 +267,7 @@ public function nextPage()
     }
 }
 
+#[Invokable]
 public function previousPage()
 {
     if ($this->page > 1) {
@@ -269,6 +295,9 @@ public function previousPage()
 Never trust client-side validation alone:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function delete($id)
 {
     // Validate user has permission
@@ -300,6 +329,9 @@ Always give user feedback:
 ### 4. Handle Errors Gracefully
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function save()
 {
     try {

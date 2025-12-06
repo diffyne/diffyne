@@ -13,6 +13,7 @@ A complete contact form with validation demonstrating form handling and error di
 
 namespace App\Diffyne;
 
+use Diffyne\Attributes\Invokable;
 use Diffyne\Component;
 
 class ContactForm extends Component
@@ -43,6 +44,7 @@ class ContactForm extends Component
         ];
     }
 
+    #[Invokable]
     public function submit()
     {
         // Validate all fields
@@ -137,7 +139,7 @@ class ContactForm extends Component
 ### Usage
 
 ```blade
-<diffyne:contact-form />
+@diffyne('ContactForm')
 ```
 
 ## How It Works
@@ -285,6 +287,9 @@ UI: Errors appear next to invalid fields
 Diffyne integrates seamlessly with Laravel's validator:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function submit()
 {
     // This throws ValidationException on failure
@@ -313,6 +318,9 @@ public function updated($field)
 Add custom errors:
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function submit()
 {
     $this->validate();
@@ -357,7 +365,9 @@ protected function rules(): array
 
 ```php
 use App\Models\ContactMessage;
+use Diffyne\Attributes\Invokable;
 
+#[Invokable]
 public function submit()
 {
     $validated = $this->validate();
@@ -378,8 +388,10 @@ public function submit()
 
 ```php
 use App\Mail\ContactFormSubmission;
+use Diffyne\Attributes\Invokable;
 use Illuminate\Support\Facades\Mail;
 
+#[Invokable]
 public function submit()
 {
     $validated = $this->validate();
@@ -490,6 +502,9 @@ public function submit()
 ### 5. Reset After Success
 
 ```php
+use Diffyne\Attributes\Invokable;
+
+#[Invokable]
 public function submit()
 {
     $this->validate();

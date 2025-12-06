@@ -13,6 +13,7 @@ An interactive todo list demonstrating array manipulation and form handling.
 
 namespace App\Diffyne;
 
+use Diffyne\Attributes\Invokable;
 use Diffyne\Component;
 
 class TodoList extends Component
@@ -28,6 +29,7 @@ class TodoList extends Component
         ];
     }
     
+    #[Invokable]
     public function addTodo()
     {
         if (trim($this->newTodo) !== '') {
@@ -39,17 +41,20 @@ class TodoList extends Component
         }
     }
     
+    #[Invokable]
     public function removeTodo($index)
     {
         unset($this->todos[$index]);
         $this->todos = array_values($this->todos);
     }
     
+    #[Invokable]
     public function toggleTodo($index)
     {
         $this->todos[$index]['completed'] = !$this->todos[$index]['completed'];
     }
     
+    #[Invokable]
     public function clearCompleted()
     {
         $this->todos = array_values(
@@ -132,7 +137,7 @@ class TodoList extends Component
 ### Usage
 
 ```blade
-<diffyne:todo-list />
+@diffyne('TodoList')
 ```
 
 ## How It Works
@@ -266,8 +271,11 @@ Count items matching a condition using `array_filter()` + `count()`.
 ### Add Priorities
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public array $todos = [];
 
+#[Invokable]
 public function addTodo($priority = 'normal')
 {
     $this->todos[] = [
@@ -288,6 +296,7 @@ public function addTodo($priority = 'normal')
 
 ```php
 use App\Models\Todo;
+use Diffyne\Attributes\Invokable;
 
 public function mount()
 {
@@ -297,6 +306,7 @@ public function mount()
         ->toArray();
 }
 
+#[Invokable]
 public function addTodo()
 {
     $todo = Todo::create([
@@ -309,6 +319,7 @@ public function addTodo()
     $this->newTodo = '';
 }
 
+#[Invokable]
 public function removeTodo($index)
 {
     Todo::find($this->todos[$index]['id'])->delete();
@@ -320,15 +331,19 @@ public function removeTodo($index)
 ### Add Editing
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public int $editingIndex = -1;
 public string $editingText = '';
 
+#[Invokable]
 public function startEdit($index)
 {
     $this->editingIndex = $index;
     $this->editingText = $this->todos[$index]['text'];
 }
 
+#[Invokable]
 public function saveEdit()
 {
     if ($this->editingIndex >= 0) {
@@ -337,6 +352,7 @@ public function saveEdit()
     }
 }
 
+#[Invokable]
 public function cancelEdit()
 {
     $this->editingIndex = -1;
@@ -363,6 +379,8 @@ public function cancelEdit()
 ### Add Categories
 
 ```php
+use Diffyne\Attributes\Invokable;
+
 public array $todos = [];
 public string $filter = 'all'; // all, active, completed
 
@@ -371,6 +389,7 @@ public function mount()
     $this->loadTodos();
 }
 
+#[Invokable]
 public function setFilter($filter)
 {
     $this->filter = $filter;
