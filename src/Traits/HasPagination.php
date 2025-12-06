@@ -3,7 +3,6 @@
 namespace Diffyne\Traits;
 
 use Diffyne\Attributes\Invokable;
-use Diffyne\Attributes\Locked;
 use Diffyne\Attributes\QueryString;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\LengthAwarePaginator as Paginator;
@@ -202,4 +201,3 @@ trait HasPagination
         return null;
     }
 }
-

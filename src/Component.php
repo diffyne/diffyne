@@ -623,6 +623,7 @@ abstract class Component
             if (is_array($item)) {
                 return (object) $item;
             }
+
             return $item;
         }, $items);
 
