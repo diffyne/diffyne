@@ -127,7 +127,7 @@ When the button is clicked, Diffyne sends only the minimal patch (~50 bytes) ins
 
 - **70-95% smaller payloads** than traditional HTML-over-the-wire approaches
 - **Sub-100ms response times** for most operations
-- **~12 KB minified JS** (~4 KB gzipped)
+- **~12 KB minified JS**
 - Only changed DOM nodes are updated
 - Automatic input value syncing
 - Built-in validation with automatic error display
