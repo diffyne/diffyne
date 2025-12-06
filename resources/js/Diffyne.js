@@ -65,7 +65,7 @@ export class Diffyne {
         this.observeDOMChanges();
 
         // Listen for custom action events from EventManager
-        document.addEventListener('diffyne:action', (e) => {
+        document.addEventListener('diff:action', (e) => {
             const { componentId, method, params } = e.detail;
             this.handleAction(componentId, method, e);
         });

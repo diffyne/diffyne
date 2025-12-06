@@ -97,7 +97,7 @@ export class EventManager {
                         const component = this.registry.get(componentId);
                         if (component && component.element) {
                             // Dispatch a custom event on the element to trigger the method call
-                            const actionEvent = new CustomEvent('diffyne:action', {
+                            const actionEvent = new CustomEvent('diff:action', {
                                 detail: { componentId, method, params }
                             });
                             component.element.dispatchEvent(actionEvent);

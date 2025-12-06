@@ -165,7 +165,7 @@ public function mount()
 <form diff:submit.prevent="addTodo">
 ```
 
-- `diffyne:submit` - Handles form submission
+- `diff:submit` - Handles form submission
 - `.prevent` - Prevents page reload
 
 ### 4. Deferred Binding

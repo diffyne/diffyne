@@ -54,7 +54,7 @@ class ContactForm extends Component
 </form>
 ```
 
-The `diffyne:error` attribute automatically:
+The `diff:error` attribute automatically:
 - Shows error message when validation fails
 - Hides when field becomes valid
 - Adds `diffyne-error` class to the input field
@@ -414,8 +414,8 @@ Use Blade directives for conditional classes:
         diff:loading.class="opacity-50 cursor-not-allowed"
         diff:loading.attr="disabled"
         class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-        <span diffyne:loading.remove>Register</span>
-        <span diffyne:loading>Registering...</span>
+        <span diff:loading.remove>Register</span>
+        <span diff:loading>Registering...</span>
     </button>
 </form>
 
@@ -529,7 +529,7 @@ protected function messages(): array
 }
 ```
 
-### 4. Use diffyne:error for Automatic Display
+### 4. Use diff:error for Automatic Display
 
 ```blade
 {{-- Preferred - automatic error display --}}

@@ -1,6 +1,6 @@
 # Click Events
 
-Handle user interactions with the `diffyne:click` directive.
+Handle user interactions with the `diff:click` directive.
 
 ## Basic Usage
 
@@ -69,7 +69,7 @@ public function calculate($a, $b)
 
 ## Event Handling
 
-The `diffyne:click` directive automatically handles the click event and sends a request to the server. No event modifiers like `.prevent` or `.stop` are supported - handle event behavior in your component methods if needed.
+The `diff:click` directive automatically handles the click event and sends a request to the server. No event modifiers like `.prevent` or `.stop` are supported - handle event behavior in your component methods if needed.
     Click me
 </a>
 ```
@@ -86,8 +86,8 @@ Show visual feedback during requests:
 </button>
 
 <button diff:click="delete">
-    <span diffyne:loading.remove>Delete</span>
-    <span diffyne:loading>Deleting...</span>
+    <span diff:loading.remove>Delete</span>
+    <span diff:loading>Deleting...</span>
 </button>
 ```
 
@@ -289,7 +289,7 @@ Always give user feedback:
 ```blade
 <button diff:click="save">
     Save
-    <span diffyne:loading>Saving...</span>
+    <span diff:loading>Saving...</span>
 </button>
 
 @if($saved)

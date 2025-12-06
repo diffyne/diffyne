@@ -68,7 +68,7 @@ public function loadStats()
 
 ```blade
 {{-- Good - waits 300ms after typing stops --}}
-<input diffyne:model.live.debounce.300="search">
+<input diff:model.live.debounce.300="search">
 
 {{-- Avoid - sends request on every keystroke --}}
 <input diff:model.live="search">
@@ -78,10 +78,10 @@ public function loadStats()
 
 ```blade
 {{-- Good - reasonable interval --}}
-<div diffyne:poll.5s="refresh">
+<div diff:poll.5s="refresh">
 
 {{-- Avoid - too frequent --}}
-<div diffyne:poll.100ms="refresh">
+<div diff:poll.100ms="refresh">
 ```
 
 ### 4. Limit Component Size

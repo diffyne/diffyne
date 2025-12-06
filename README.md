@@ -5,13 +5,13 @@ Diffyne lets you build dynamic interfaces with the simplicity of Blade/PHP compo
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)](https://php.net)
-[![Laravel Version](https://img.shields.io/badge/laravel-%5E10.0%20%7C%20%5E11.0%20%7C%20%5E12.0-red)](https://laravel.com)
+[![Laravel Version](https://img.shields.io/badge/laravel-%5E10.0-red)](https://laravel.com)
 
 ## 🚀 Why Diffyne?
 
 - **🔥 Ultra-efficient:** 70-95% smaller payloads than traditional approaches
 - **🧠 Server-driven:** Write UI logic in PHP, not JavaScript
-- **⚡ Lightweight:** ~12 KB JS (4 KB gzipped), sub-100ms response times
+- **⚡ Lightweight:** ~23 KB JS, sub-100ms response times
 - **✅ Laravel Native:** Full validation, authentication, and ORM integration
 
 ## 📦 Quick Start
@@ -72,22 +72,22 @@ When the button is clicked, Diffyne sends only the minimal patch (~50 bytes) ins
 
 | Directive | Description |
 |-----------|-------------|
-| `diffyne:click` | Call server method on click |
-| `diffyne:model` | Two-way data binding |
-| `diffyne:submit` | Handle form submission |
-| `diffyne:poll` | Auto-refresh at intervals |
-| `diffyne:loading` | Show loading states |
-| `diffyne:error` | Display validation errors |
+| `diff:click` | Call server method on click |
+| `diff:model` | Two-way data binding |
+| `diff:submit` | Handle form submission |
+| `diff:poll` | Auto-refresh at intervals |
+| `diff:loading` | Show loading states |
+| `diff:error` | Display validation errors |
 
 ```blade
 {{-- Live search with debouncing --}}
-<input diffyne:model.live.debounce.300="search">
+<input diff:model.live.debounce.300="search">
 
 {{-- Form with validation --}}
 <form diff:submit="submit">
     <input diff:model="email">
     <span diff:error="email"></span>
-    <button type="submit" diffyne:loading.class.opacity-50>Submit</button>
+    <button type="submit" diff:loading.class.opacity-50>Submit</button>
 </form>
 ```
 

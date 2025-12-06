@@ -54,14 +54,14 @@ class Counter extends Component
         <div class="flex justify-center gap-4 mb-4">
             <button 
                 diff:click="decrement"
-                diffyne:loading.class.opacity-50
+                diff:loading.class.opacity-50
                 class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
                 -
             </button>
             
             <button 
                 diff:click="increment"
-                diffyne:loading.class.opacity-50
+                diff:loading.class.opacity-50
                 class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
                 +
             </button>
@@ -104,7 +104,7 @@ public function increment()
 }
 ```
 
-Public methods can be called from the browser using `diffyne:click`.
+Public methods can be called from the browser using `diff:click`.
 
 ### 3. Event Binding
 
@@ -126,7 +126,7 @@ When clicked:
 ```blade
 <button 
     diff:click="increment"
-    diffyne:loading.class.opacity-50>
+    diff:loading.class.opacity-50>
     +
 </button>
 ```

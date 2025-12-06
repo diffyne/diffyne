@@ -68,7 +68,7 @@ class UserSearch extends Component
         <div class="relative">
             <input 
                 type="text"
-                diffyne:model.live.debounce.300="search"
+                diff:model.live.debounce.300="search"
                 placeholder="Search users by name or email..."
                 class="w-full px-4 py-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -83,7 +83,7 @@ class UserSearch extends Component
         </div>
         
         {{-- Loading indicator --}}
-        <div diffyne:loading class="text-sm text-gray-500 mt-2">
+        <div diff:loading class="text-sm text-gray-500 mt-2">
             <span class="inline-block animate-pulse">Searching...</span>
         </div>
     </div>
@@ -135,7 +135,7 @@ class UserSearch extends Component
 ### 1. Live Binding with Debounce
 
 ```blade
-<input diffyne:model.live.debounce.300="search">
+<input diff:model.live.debounce.300="search">
 ```
 
 - `.live` - Syncs immediately as user types
@@ -216,7 +216,7 @@ With `.debounce.300`:
 ### Loading State
 
 ```blade
-<div diffyne:loading>Searching...</div>
+<div diff:loading>Searching...</div>
 ```
 
 Shows automatically while server is processing the request.
@@ -462,13 +462,13 @@ Schema::table('users', function (Blueprint $table) {
 
 ```blade
 {{-- Fast search (instant feedback) --}}
-<input diffyne:model.live.debounce.150="search">
+<input diff:model.live.debounce.150="search">
 
 {{-- Normal search (balanced) --}}
-<input diffyne:model.live.debounce.300="search">
+<input diff:model.live.debounce.300="search">
 
 {{-- Slow search (reduce server load) --}}
-<input diffyne:model.live.debounce.500="search">
+<input diff:model.live.debounce.500="search">
 ```
 
 ### 2. Limit Results
@@ -481,7 +481,7 @@ $query->limit(10)->get();
 ### 3. Show Loading State
 
 ```blade
-<div diffyne:loading>Searching...</div>
+<div diff:loading>Searching...</div>
 ```
 
 ### 4. Handle Empty States

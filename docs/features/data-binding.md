@@ -1,6 +1,6 @@
 # Data Binding
 
-Two-way data binding with `diffyne:model` keeps your component properties in sync with form inputs.
+Two-way data binding with `diff:model` keeps your component properties in sync with form inputs.
 
 ## Basic Usage
 
@@ -113,7 +113,7 @@ Syncs with server immediately on every input:
 Waits X milliseconds after user stops typing (requires `.live`):
 
 ```blade
-<input diffyne:model.live.debounce.300="search">
+<input diff:model.live.debounce.300="search">
 ```
 
 **Use case:** Search inputs to avoid excessive server requests.
@@ -122,7 +122,7 @@ Waits X milliseconds after user stops typing (requires `.live`):
 
 ```blade
 {{-- Live binding with 500ms debounce --}}
-<input diffyne:model.live.debounce.500="search">
+<input diff:model.live.debounce.500="search">
 ```
 
 ## Examples
@@ -132,10 +132,10 @@ Waits X milliseconds after user stops typing (requires `.live`):
 ```blade
 <input 
     type="text" 
-    diffyne:model.live.debounce.300="search"
+    diff:model.live.debounce.300="search"
     placeholder="Search users...">
 
-<div diffyne:loading>Searching...</div>
+<div diff:loading>Searching...</div>
 
 <ul>
     @foreach($results as $user)
@@ -187,7 +187,7 @@ class UserSearch extends Component
         <span diff:error="message"></span>
     </div>
     
-    <button type="submit" diffyne:loading.class.opacity-50>
+    <button type="submit" diff:loading.class.opacity-50>
         Submit
     </button>
 </form>
@@ -354,9 +354,9 @@ class MultiStepForm extends Component
 
 ### 1. Choose the Right Modifier
 
-- **Real-time search:** `diffyne:model.live.debounce.300`
-- **Form inputs:** `diffyne:model` (updates local state, syncs on change)
-- **Immediate server validation:** `diffyne:model.lazy`
+- **Real-time search:** `diff:model.live.debounce.300`
+- **Form inputs:** `diff:model` (updates local state, syncs on change)
+- **Immediate server validation:** `diff:model.lazy`
 
 ### 2. Type Your Properties
 

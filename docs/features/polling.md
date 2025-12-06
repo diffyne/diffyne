@@ -1,6 +1,6 @@
 # Polling
 
-Automatically refresh component data at regular intervals with `diffyne:poll`.
+Automatically refresh component data at regular intervals with `diff:poll`.
 
 ## Basic Usage
 
@@ -51,7 +51,7 @@ class Dashboard extends Component
 
 ### Default Action
 
-If `diffyne:poll.action` is not specified, it defaults to calling `refresh()`:
+If `diff:poll.action` is not specified, it defaults to calling `refresh()`:
 
 ```blade
 {{-- Calls refresh() every 2 seconds --}}
@@ -81,7 +81,7 @@ If `diffyne:poll.action` is not specified, it defaults to calling `refresh()`:
     
     <small class="text-gray-500">
         Last updated: {{ $lastUpdate }}
-        <span diffyne:loading>Updating...</span>
+        <span diff:loading>Updating...</span>
     </small>
 </div>
 ```
@@ -181,7 +181,7 @@ class NotificationBadge extends Component
     
     @if($status !== 'delivered')
         <p class="text-sm text-gray-500 mt-4">
-            <span diffyne:loading>Checking for updates...</span>
+            <span diff:loading>Checking for updates...</span>
         </p>
     @endif
 </div>
@@ -231,7 +231,7 @@ class OrderTracker extends Component
         @endif
     </div>
     
-    <div diffyne:loading class="text-center text-gray-500 text-sm mt-2">
+    <div diff:loading class="text-center text-gray-500 text-sm mt-2">
         Checking for new activity...
     </div>
 </div>
@@ -276,7 +276,7 @@ Stop polling based on conditions:
     @if($status === 'completed')
         <p class="text-green-500">Complete!</p>
     @else
-        <p diffyne:loading>Checking progress...</p>
+        <p diff:loading>Checking progress...</p>
     @endif
 </div>
 ```
@@ -361,7 +361,7 @@ public function checkStatus()
 ```blade
 <div>
     <input 
-        diffyne:model.live.debounce.300="search"
+        diff:model.live.debounce.300="search"
         placeholder="Search...">
     
     <div diff:poll="10000" diff:poll.action="refresh">
@@ -380,7 +380,7 @@ public function checkStatus()
         {{-- Content --}}
     </div>
     
-    <div diffyne:loading>
+    <div diff:loading>
         Updating...
     </div>
 </div>
@@ -429,7 +429,7 @@ public function checkStatus()
 <div diff:poll="5000" diff:poll.action="refresh">
     {{-- Content --}}
     
-    <small diffyne:loading class="text-gray-500">
+    <small diff:loading class="text-gray-500">
         Updating...
     </small>
 </div>

@@ -127,8 +127,8 @@ class ContactForm extends Component
             diff:loading.class="opacity-50 cursor-not-allowed"
             diff:loading.attr="disabled"
             class="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium">
-            <span diffyne:loading.remove>Send Message</span>
-            <span diffyne:loading>Sending...</span>
+            <span diff:loading.remove>Send Message</span>
+            <span diff:loading>Sending...</span>
         </button>
     </form>
 </div>
@@ -179,7 +179,7 @@ Provide user-friendly error messages.
 <span diff:error="name" class="text-red-500"></span>
 ```
 
-The `diffyne:error` attribute automatically:
+The `diff:error` attribute automatically:
 - Shows error message when validation fails
 - Hides when field becomes valid
 - Adds `diffyne-error` class to the input
@@ -201,8 +201,8 @@ Using `.defer` means:
 <button 
     diff:loading.class="opacity-50 cursor-not-allowed"
     diff:loading.attr="disabled">
-    <span diffyne:loading.remove>Send Message</span>
-    <span diffyne:loading>Sending...</span>
+    <span diff:loading.remove>Send Message</span>
+    <span diff:loading>Sending...</span>
 </button>
 ```
 
@@ -215,7 +215,7 @@ While form submits:
 ```
 User fills form and clicks "Send Message"
     ↓
-Form submission captured by diffyne:submit.prevent
+Form submission captured by diff:submit.prevent
     ↓
 AJAX request: {
     method: 'submit',
@@ -272,7 +272,7 @@ Browser: displayErrors() called
 For each error:
   - Find input field
   - Add 'diffyne-error' class
-  - Find diffyne:error span
+  - Find diff:error span
   - Insert error message
     ↓
 UI: Errors appear next to invalid fields
@@ -482,8 +482,8 @@ public function submit()
 
 ```blade
 <button diff:loading.attr="disabled">
-    <span diffyne:loading.remove>Send</span>
-    <span diffyne:loading>Sending...</span>
+    <span diff:loading.remove>Send</span>
+    <span diff:loading>Sending...</span>
 </button>
 ```
 

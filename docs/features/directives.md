@@ -1,22 +1,22 @@
 # Directives Overview
 
-Diffyne provides a set of directives (special attributes) that enable reactive behavior in your components. All directives are prefixed with `diffyne:`.
+Diffyne provides a set of directives (special attributes) that enable reactive behavior in your components. All directives are prefixed with `diff:`.
 
 ## Quick Reference
 
 | Directive | Purpose | Example |
 |-----------|---------|---------||
-| `diffyne:click` | Call method on click | `<button diff:click="save">` |
-| `diffyne:change` | Call method on change | `<select diff:change="updateFilter">` |
-| `diffyne:model` | Two-way data binding | `<input diff:model="name">` |
-| `diffyne:submit` | Handle form submission | `<form diff:submit="submit">` |
-| `diffyne:poll` | Poll server periodically | `<div diff:poll="5000">` |
-| `diffyne:loading` | Show loading state | `<button diffyne:loading.class.opacity-50>` |
-| `diffyne:error` | Display validation errors | `<span diff:error="email">` |
+| `diff:click` | Call method on click | `<button diff:click="save">` |
+| `diff:change` | Call method on change | `<select diff:change="updateFilter">` |
+| `diff:model` | Two-way data binding | `<input diff:model="name">` |
+| `diff:submit` | Handle form submission | `<form diff:submit="submit">` |
+| `diff:poll` | Poll server periodically | `<div diff:poll="5000">` |
+| `diff:loading` | Show loading state | `<button diff:loading.class.opacity-50>` |
+| `diff:error` | Display validation errors | `<span diff:error="email">` |
 
 ## Event Directives
 
-### diffyne:click
+### diff:click
 
 Triggers when element is clicked.
 
@@ -29,7 +29,7 @@ Triggers when element is clicked.
 
 [Learn more about click events →](click-events.md)
 
-### diffyne:change
+### diff:change
 
 Triggers when form element value changes.
 
@@ -42,7 +42,7 @@ Triggers when form element value changes.
 <input type="checkbox" diff:change="toggleStatus">
 ```
 
-### diffyne:submit
+### diff:submit
 
 Handles form submission.
 
@@ -53,13 +53,13 @@ Handles form submission.
 </form>
 ```
 
-**Note:** The form's default submission is automatically prevented by Diffyne when using `diffyne:submit`.
+**Note:** The form's default submission is automatically prevented by Diffyne when using `diff:submit`.
 
 [Learn more about forms →](forms.md)
 
 ## Data Binding
 
-### diffyne:model
+### diff:model
 
 Creates two-way data binding between input and component property.
 
@@ -96,14 +96,14 @@ Creates two-way data binding between input and component property.
 <input diff:model.live="search">
 
 {{-- Sync after 300ms of inactivity --}}
-<input diffyne:model.live.debounce.300="search">
+<input diff:model.live.debounce.300="search">
 ```
 
 [Learn more about data binding →](data-binding.md)
 
 ## Loading States
 
-### diffyne:loading
+### diff:loading
 
 Shows/hides elements or adds classes during server requests.
 
@@ -111,21 +111,21 @@ Shows/hides elements or adds classes during server requests.
 {{-- Add class while loading --}}
 <button 
     diff:click="save"
-    diffyne:loading.class.opacity-50>
+    diff:loading.class.opacity-50>
     Save
 </button>
 
 {{-- Multiple classes --}}
 <button 
     diff:click="save"
-    diffyne:loading.class.opacity-50.cursor-not-allowed>
+    diff:loading.class.opacity-50.cursor-not-allowed>
     Save
 </button>
 
 {{-- Show loading spinner (default opacity/pointer-events) --}}
 <button diff:click="save">
     Save
-    <span diffyne:loading>
+    <span diff:loading>
         <svg class="spinner">...</svg>
     </span>
 </button>
@@ -137,7 +137,7 @@ Shows/hides elements or adds classes during server requests.
 
 ## Polling
 
-### diffyne:poll
+### diff:poll
 
 Automatically call a method at regular intervals.
 
@@ -166,7 +166,7 @@ Automatically call a method at regular intervals.
 
 ## Error Handling
 
-### diffyne:error
+### diff:error
 
 Automatically displays validation errors for a field.
 
@@ -193,7 +193,7 @@ Many directives support chaining modifiers:
 <form diff:submit.prevent="submit">
 
 {{-- Model with live + debounce --}}
-<input diffyne:model.live.debounce.300="search">
+<input diff:model.live.debounce.300="search">
 
 {{-- Click with stop propagation --}}
 <div diff:click.stop="handleClick">
@@ -215,9 +215,9 @@ Many directives support chaining modifiers:
     
     <button 
         type="submit"
-        diffyne:loading.class.opacity-50>
+        diff:loading.class.opacity-50>
         Submit
-        <span diffyne:loading>...</span>
+        <span diff:loading>...</span>
     </button>
 </form>
 ```
@@ -227,10 +227,10 @@ Many directives support chaining modifiers:
 ```blade
 <input 
     type="text" 
-    diffyne:model.live.debounce.300="search"
+    diff:model.live.debounce.300="search"
     placeholder="Search...">
 
-<div diffyne:loading.remove>
+<div diff:loading.remove>
     Searching...
 </div>
 
@@ -248,7 +248,7 @@ Many directives support chaining modifiers:
     <div>Active Users: {{ $activeUsers }}</div>
     <div>Revenue: ${{ $revenue }}</div>
     
-    <small diffyne:loading>Updating...</small>
+    <small diff:loading>Updating...</small>
 </div>
 ```
 

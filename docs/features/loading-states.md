@@ -1,13 +1,13 @@
 # Loading States
 
-Show visual feedback during server requests with `diffyne:loading`.
+Show visual feedback during server requests with `diff:loading`.
 
 ## Basic Usage
 
 ### Add Class During Loading
 
 ```blade
-<button diffyne:loading.class.opacity-50>
+<button diff:loading.class.opacity-50>
     Save
 </button>
 ```
@@ -17,7 +17,7 @@ When the button is clicked, `opacity-50` class is added until the server respond
 ### Remove Class During Loading
 
 ```blade
-<span diffyne:loading.remove.hidden class="hidden">
+<span diff:loading.remove.hidden class="hidden">
     <svg class="animate-spin">...</svg>
 </span>
 ```
@@ -27,7 +27,7 @@ Perfect for showing hidden elements during loading - the `hidden` class is remov
 ### Set Attribute During Loading
 
 ```blade
-<button diffyne:loading.attr.disabled>
+<button diff:loading.attr.disabled>
     Submit
 </button>
 ```
@@ -39,11 +39,11 @@ Sets the `disabled` attribute on the button during loading, preventing duplicate
 ```blade
 <button diff:click="submit">
     Submit
-    <span diffyne:loading>...</span>
+    <span diff:loading>...</span>
 </button>
 ```
 
-Without modifiers, elements with `diffyne:loading` get default styles: `opacity: 0.5` and `pointer-events: none`.
+Without modifiers, elements with `diff:loading` get default styles: `opacity: 0.5` and `pointer-events: none`.
 
 ## Common Patterns
 
@@ -52,9 +52,9 @@ Without modifiers, elements with `diffyne:loading` get default styles: `opacity:
 ```blade
 <button 
     diff:click="save"
-    diffyne:loading.attr.disabled
+    diff:loading.attr.disabled
     class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed">
-    <span diffyne:loading.remove.hidden class="hidden mr-2">
+    <span diff:loading.remove.hidden class="hidden mr-2">
         <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" 
                     stroke="currentColor" stroke-width="4" fill="none"></circle>
@@ -75,7 +75,7 @@ Without modifiers, elements with `diffyne:loading` get default styles: `opacity:
         <button type="submit">Submit</button>
     </form>
     
-    <div diffyne:loading.remove.hidden
+    <div diff:loading.remove.hidden
          class="absolute inset-0 bg-white bg-opacity-75 hidden flex items-center justify-center">
         <div class="text-center">
             <svg class="animate-spin h-12 w-12 mx-auto mb-2" viewBox="0 0 24 24">
@@ -93,7 +93,7 @@ Without modifiers, elements with `diffyne:loading` get default styles: `opacity:
 <div>
     <button diff:click="process">Start Processing</button>
     
-    <div diffyne:loading class="mt-4">
+    <div diff:loading class="mt-4">
         <div class="w-full bg-gray-200 rounded-full h-2.5">
             <div class="bg-blue-600 h-2.5 rounded-full animate-pulse" style="width: 45%"></div>
         </div>
@@ -117,7 +117,7 @@ Without modifiers, elements with `diffyne:loading` get default styles: `opacity:
     </div>
     
     {{-- Loading skeleton (shown with default opacity/pointer-events) --}}
-    <div diffyne:loading>
+    <div diff:loading>
         @for($i = 0; $i < 3; $i++)
             <div class="border p-4 mb-2 animate-pulse">
                 <div class="h-6 bg-gray-300 rounded mb-2"></div>
@@ -135,8 +135,8 @@ Without modifiers, elements with `diffyne:loading` get default styles: `opacity:
 Adds CSS class during loading:
 
 ```blade
-<button diffyne:loading.class.opacity-50>
-<button diffyne:loading.class.disabled>
+<button diff:loading.class.opacity-50>
+<button diff:loading.class.disabled>
 ```
 
 The specified class is added when loading starts and removed when loading ends.
@@ -146,7 +146,7 @@ The specified class is added when loading starts and removed when loading ends.
 Removes CSS class during loading (re-adds when done):
 
 ```blade
-<span diffyne:loading.remove.hidden class="hidden">
+<span diff:loading.remove.hidden class="hidden">
     <svg class="animate-spin">...</svg>
 </span>
 ```
@@ -158,7 +158,7 @@ Perfect for showing hidden elements during loading. The class is removed when lo
 Sets an attribute during loading (empty value):
 
 ```blade
-<button diffyne:loading.attr.disabled>Submit</button>
+<button diff:loading.attr.disabled>Submit</button>
 ```
 
 Original attribute values are preserved and restored after loading.
@@ -168,7 +168,7 @@ Original attribute values are preserved and restored after loading.
 Sets an attribute with a specific value during loading:
 
 ```blade
-<button diffyne:loading.attr.aria-busy.true>Process</button>
+<button diff:loading.attr.aria-busy.true>Process</button>
 ```
 
 Useful for setting ARIA attributes or other attributes that need specific values.
@@ -178,7 +178,7 @@ Useful for setting ARIA attributes or other attributes that need specific values
 Without modifiers, elements get default opacity and pointer-events:
 
 ```blade
-<div diffyne:loading>
+<div diff:loading>
     Visible only when loading
 </div>
 ```
@@ -187,8 +187,8 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 
 ## Important Notes
 
-- Each element can have **one** `diffyne:loading` attribute with its modifiers
-- The attribute name itself contains the modifiers (e.g., `diffyne:loading.remove.hidden`)
+- Each element can have **one** `diff:loading` attribute with its modifiers
+- The attribute name itself contains the modifiers (e.g., `diff:loading.remove.hidden`)
 - Original attribute values are automatically preserved and restored
 - Classes are added/removed atomically for smooth transitions
 
@@ -200,18 +200,18 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 <div>
     <button 
         diff:click="save"
-        diffyne:loading.class.opacity-50>
+        diff:loading.class.opacity-50>
         Save
     </button>
     
     <button 
         diff:click="delete"
-        diffyne:loading.class.opacity-50>
+        diff:loading.class.opacity-50>
         Delete
     </button>
     
     {{-- Shows during ANY action --}}
-    <div diffyne:loading>Processing...</div>
+    <div diff:loading>Processing...</div>
 </div>
 ```
 
@@ -223,19 +223,19 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
     
     <button 
         type="submit"
-        diffyne:loading.class.opacity-50>
+        diff:loading.class.opacity-50>
         Submit
     </button>
     
     <button 
         type="button"
         diff:click="saveDraft"
-        diffyne:loading.class.opacity-50>
+        diff:loading.class.opacity-50>
         Save Draft
     </button>
     
     {{-- Shows during submit or saveDraft --}}
-    <span diffyne:loading class="text-blue-500">Processing...</span>
+    <span diff:loading class="text-blue-500">Processing...</span>
 </form>
 ```
 
@@ -246,7 +246,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 ```blade
 <form diff:submit="submit" class="relative">
     {{-- Loading overlay using .remove.hidden --}}
-    <div diffyne:loading.remove.hidden
+    <div diff:loading.remove.hidden
          class="absolute inset-0 bg-white bg-opacity-75 hidden flex items-center justify-center rounded-lg z-10">
         <div class="text-center">
             <svg class="animate-spin h-10 w-10 text-blue-500 mx-auto mb-2" viewBox="0 0 24 24">
@@ -263,9 +263,9 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
     {{-- Button with disabled attribute and spinner --}}
     <button
         type="submit"
-        diffyne:loading.attr.disabled
+        diff:loading.attr.disabled
         class="bg-blue-500 text-white px-6 py-3 rounded disabled:opacity-50 disabled:cursor-not-allowed">
-        <span diffyne:loading.remove.hidden class="hidden mr-2">
+        <span diff:loading.remove.hidden class="hidden mr-2">
             <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -280,7 +280,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 
 ```blade
 <form diff:submit="submit">
-    <div diffyne:loading.class.opacity-50>
+    <div diff:loading.class.opacity-50>
         <input diff:model="name">
         <input diff:model="email">
         <textarea diff:model="message"></textarea>
@@ -288,7 +288,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
         <button type="submit">Submit</button>
     </div>
     
-    <div diffyne:loading.remove.hidden class="hidden text-blue-500 mt-2">
+    <div diff:loading.remove.hidden class="hidden text-blue-500 mt-2">
         Submitting your form...
     </div>
 </form>
@@ -312,8 +312,8 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
 </style>
 
 <button diff:click="process">
-    <span diffyne:loading.remove>Process</span>
-    <span diffyne:loading class="loading-dots">Processing</span>
+    <span diff:loading.remove>Process</span>
+    <span diff:loading class="loading-dots">Processing</span>
 </button>
 ```
 
@@ -325,7 +325,7 @@ Elements get `opacity: 0.5` and `pointer-events: none` automatically.
     <button diff:click="generateReport">Generate Report</button>
     <button diff:click="exportData">Export Data</button>
     
-    <div diffyne:loading class="mt-4 p-4 bg-blue-100 rounded">
+    <div diff:loading class="mt-4 p-4 bg-blue-100 rounded">
         <p class="font-semibold">Processing your request</p>
         <p class="text-sm text-gray-600">This may take a few moments...</p>
     </div>
@@ -395,7 +395,7 @@ Usage:
 ```blade
 <button 
     diff:click="save"
-    diffyne:loading.attr.disabled
+    diff:loading.attr.disabled
     class="disabled:opacity-50 disabled:cursor-not-allowed">
     Save
 </button>
@@ -408,9 +408,9 @@ Prevents multiple clicks and duplicate requests.
 ```blade
 {{-- Good - clear feedback --}}
 <button 
-    diffyne:loading.attr.disabled
+    diff:loading.attr.disabled
     class="disabled:opacity-50">
-    <span diffyne:loading.remove.hidden class="hidden">
+    <span diff:loading.remove.hidden class="hidden">
         <svg class="animate-spin">...</svg>
     </span>
     Save
@@ -424,9 +424,9 @@ Prevents multiple clicks and duplicate requests.
 
 ```blade
 {{-- Context-specific messages --}}
-<span diffyne:loading>Sending email...</span>
-<span diffyne:loading>Generating PDF...</span>
-<span diffyne:loading>Uploading file...</span>
+<span diff:loading>Sending email...</span>
+<span diff:loading>Generating PDF...</span>
+<span diff:loading>Uploading file...</span>
 ```
 
 ### 4. Consider Skeleton Loaders for Content
@@ -434,11 +434,11 @@ Prevents multiple clicks and duplicate requests.
 Better UX than spinners for content areas:
 
 ```blade
-<div diffyne:loading.remove>
+<div diff:loading.remove>
     {{ $content }}
 </div>
 
-<div diffyne:loading>
+<div diff:loading>
     {{-- Skeleton matching content structure --}}
     <div class="animate-pulse">
         <div class="h-4 bg-gray-300 rounded mb-2"></div>
@@ -458,8 +458,8 @@ Better UX than spinners for content areas:
         type="submit"
         diff:loading.class="opacity-50"
         diff:loading.attr="disabled">
-        <span diffyne:loading.remove>Submit</span>
-        <span diffyne:loading>Submitting...</span>
+        <span diff:loading.remove>Submit</span>
+        <span diff:loading>Submitting...</span>
     </button>
 </form>
 ```
@@ -484,7 +484,7 @@ Check for JavaScript errors in console. Server must respond for loading to clear
 
 ### Multiple Loading Indicators
 
-`diffyne:loading` shows for ANY action in the component. Use conditional logic if you need action-specific indicators.
+`diff:loading` shows for ANY action in the component. Use conditional logic if you need action-specific indicators.
 
 ## Next Steps
 

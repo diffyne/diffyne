@@ -139,13 +139,13 @@ public function mount()
 
 ### Event Directives
 
-#### diffyne:click
+#### diff:click
 ```blade
 <button diff:click="removeTodo({{ $index }})">✕</button>
 ```
 Calls server method when clicked.
 
-#### diffyne:submit
+#### diff:submit
 ```blade
 <form diff:submit="addTodo">
 ```
@@ -157,7 +157,7 @@ Handles form submission. Default form submission is automatically prevented.
 <input diff:model="newTodo">
 ```
 
-- `diffyne:model` - Two-way binding
+- `diff:model` - Two-way binding
 - Without modifiers - Updates local state, syncs on change
 
 Modifiers:
@@ -247,7 +247,7 @@ public function removeTodo($index)
 ```blade
 <button 
     diff:click="addTodo"
-    diffyne:loading.class.opacity-50>
+    diff:loading.class.opacity-50>
     Add
 </button>
 ```

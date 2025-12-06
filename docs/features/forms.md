@@ -1,6 +1,6 @@
 # Form Handling
 
-Handle form submissions with `diffyne:submit` directive.
+Handle form submissions with `diff:submit` directive.
 
 ## Basic Form Submission
 
@@ -26,7 +26,7 @@ class ContactForm extends Component
 }
 ```
 
-**Note:** Form default submission is automatically prevented when using `diffyne:submit`.
+**Note:** Form default submission is automatically prevented when using `diff:submit`.
 
 ## Form with Validation
 
@@ -52,10 +52,10 @@ class ContactForm extends Component
     
     <button 
         type="submit"
-        diffyne:loading.class.opacity-50
+        diff:loading.class.opacity-50
         class="bg-blue-500 text-white px-4 py-2 rounded">
         Login
-        <span diffyne:loading>...</span>
+        <span diff:loading>...</span>
     </button>
 </form>
 
@@ -105,7 +105,7 @@ class LoginForm extends Component
 
 ## Model Binding in Forms
 
-By default, `diffyne:model` updates local state and syncs with server on change events. For forms, this is typically what you want:
+By default, `diff:model` updates local state and syncs with server on change events. For forms, this is typically what you want:
 
 ```blade
 <form diff:submit="createUser">
@@ -422,13 +422,13 @@ Show feedback during form submission:
     
     <button 
         type="submit"
-        diffyne:loading.class.opacity-50.cursor-not-allowed>
-        <span diffyne:loading>Submitting...</span>
+        diff:loading.class.opacity-50.cursor-not-allowed>
+        <span diff:loading>Submitting...</span>
         Submit
     </button>
 </form>
 
-<div diffyne:loading class="text-blue-500">
+<div diff:loading class="text-blue-500">
     Processing your request...
 </div>
 ```
@@ -470,8 +470,8 @@ public function submit()
 ### 4. Provide User Feedback
 
 ```blade
-<button type="submit" diffyne:loading.class.opacity-50>
-    <span diffyne:loading>Submitting...</span>
+<button type="submit" diff:loading.class.opacity-50>
+    <span diff:loading>Submitting...</span>
     Submit
 </button>
 

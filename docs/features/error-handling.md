@@ -17,7 +17,7 @@ Validation errors are automatically caught and displayed:
 </form>
 ```
 
-When validation fails, errors automatically appear in `diffyne:error` elements.
+When validation fails, errors automatically appear in `diff:error` elements.
 
 ### Server Errors
 
@@ -74,7 +74,7 @@ public function submit()
 {
     $this->validate(); // Throws ValidationException
     
-    // Errors automatically displayed in diffyne:error elements
+    // Errors automatically displayed in diff:error elements
 }
 ```
 
@@ -229,8 +229,8 @@ Diffyne adds `diffyne-error` class to fields with errors:
             diff:loading.class="opacity-50 cursor-not-allowed"
             diff:loading.attr="disabled"
             class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-            <span diffyne:loading.remove>Submit</span>
-            <span diffyne:loading>Submitting...</span>
+            <span diff:loading.remove>Submit</span>
+            <span diff:loading>Submitting...</span>
         </button>
     </form>
 </div>
