@@ -6,7 +6,6 @@ use Diffyne\Component;
 use Diffyne\Security\StateSigner;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ViewErrorBag;
-use Illuminate\View\View as IlluminateView;
 
 /**
  * Renderer for Diffyne components that generates Virtual DOM and patches.

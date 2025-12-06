@@ -1,0 +1,50 @@
+name: Diffyne CI
+
+on:
+  pull_request:
+    paths:
+      - 'packages/diffyne/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/diffyne/**'
+
+jobs:
+  ci:
+    name: PHPStan, Format Check & Tests
+    runs-on: ubuntu-latest
+    environment: 
+      name: ci-approval
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+          coverage: none
+
+      - name: Install Composer dependencies
+        working-directory: packages/diffyne
+        run: |
+          composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run PHPStan
+        working-directory: packages/diffyne
+        run: composer analyse
+
+      - name: Check code formatting
+        working-directory: packages/diffyne
+        run: composer format:test
+
+      - name: Run tests
+        working-directory: packages/diffyne
+        run: composer test
+
