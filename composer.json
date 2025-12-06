@@ -22,15 +22,30 @@
         }
     ],
     "require": {
-        "php": "^8.1",
-        "illuminate/support": "^10.0",
-        "illuminate/view": "^10.0",
-        "illuminate/routing": "^10.0",
+        "php": "^8.3",
+        "illuminate/support": "^12.0",
         "sockeon/sockeon": "dev-main"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.0",
-        "phpunit/phpunit": "^10.0"
+        "friendsofphp/php-cs-fixer": "^3.91",
+        "orchestra/pest-plugin-testbench": "^3.0",
+        "orchestra/testbench": "^10.8",
+        "phpstan/phpstan": "^2.1",
+        "pestphp/pest": "^3.0"
+    },
+    "scripts": {
+        "analyse": [
+            "@php vendor/bin/phpstan analyse"
+        ],
+        "format": [
+            "@php vendor/bin/php-cs-fixer fix"
+        ],
+        "format:test": [
+            "@php vendor/bin/php-cs-fixer fix --dry-run --diff"
+        ],
+        "test": [
+            "@php vendor/bin/pest --no-coverage"
+        ]
     },
     "extra": {
         "laravel": {
@@ -43,5 +58,11 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "orchestral/pest-plugin-testbench": true,
+            "pestphp/pest-plugin": true
+        }
+    }
 }
