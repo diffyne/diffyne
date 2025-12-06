@@ -36,6 +36,10 @@ export class Diffyne {
         this.modelSync = new ModelSyncService();
         this.eventManager = new EventManager(this.registry, this.logger);
         
+        // Request tracking for cancellation and sequencing
+        this.pendingRequests = new Map();
+        this.requestSequence = new Map();
+        
         // Initialize event binder with handlers
         this.eventBinder = new EventBinder(
             (id, action, event) => this.handleAction(id, action, event),
@@ -229,7 +233,19 @@ export class Diffyne {
             return;
         }
 
+        // Cancel any pending requests for this component
+        this.cancelPendingRequest(componentId);
+
         this.loadingService.show(component.element);
+
+        // Create abort controller for request cancellation
+        const abortController = new AbortController();
+        const requestId = this.getNextRequestId(componentId);
+        
+        this.pendingRequests.set(componentId, {
+            controller: abortController,
+            requestId: requestId
+        });
 
         try {
             const response = await this.transport.send({
@@ -243,11 +259,21 @@ export class Diffyne {
                 signature: component.signature
             });
 
-            this.processResponse(componentId, response);
+            // Check if this request is still valid (not superseded)
+            if (this.isRequestValid(componentId, requestId)) {
+                this.processResponse(componentId, response, requestId);
+            }
         } catch (error) {
-            this.handleError(componentId, error);
+            // Only handle error if request wasn't cancelled
+            if (error.name !== 'AbortError' && this.isRequestValid(componentId, requestId)) {
+                this.handleError(componentId, error);
+            }
         } finally {
-            this.loadingService.hide(component.element);
+            // Only hide loading if this is still the latest request
+            if (this.isRequestValid(componentId, requestId)) {
+                this.loadingService.hide(component.element);
+            }
+            this.pendingRequests.delete(componentId);
         }
     }
 
@@ -258,9 +284,21 @@ export class Diffyne {
         const component = this.registry.get(componentId);
         if (!component) return;
 
+        // Cancel any pending requests for this component
+        this.cancelPendingRequest(componentId);
+
         // Store the original state and signature before any updates
         const originalState = { ...component.state };
         const originalSignature = component.signature;
+
+        // Create abort controller for request cancellation
+        const abortController = new AbortController();
+        const requestId = this.getNextRequestId(componentId);
+        
+        this.pendingRequests.set(componentId, {
+            controller: abortController,
+            requestId: requestId
+        });
 
         try {
             // Send request with ORIGINAL state (before optimistic update)
@@ -275,18 +313,32 @@ export class Diffyne {
                 signature: originalSignature // Original signature matches original state
             });
 
-            this.processResponse(componentId, response);
+            // Check if this request is still valid (not superseded)
+            if (this.isRequestValid(componentId, requestId)) {
+                this.processResponse(componentId, response, requestId);
+            }
         } catch (error) {
-            this.handleError(componentId, error);
+            // Only handle error if request wasn't cancelled
+            if (error.name !== 'AbortError' && this.isRequestValid(componentId, requestId)) {
+                this.handleError(componentId, error);
+            }
+        } finally {
+            this.pendingRequests.delete(componentId);
         }
     }
 
     /**
      * Process server response
      */
-    processResponse(componentId, response) {
+    processResponse(componentId, response, requestId = null) {
         const component = this.registry.get(componentId);
         if (!component) return;
+
+        // Double-check request is still valid
+        if (requestId && !this.isRequestValid(componentId, requestId)) {
+            this.logger.log(`Ignoring stale response for ${componentId} (request ${requestId})`);
+            return;
+        }
 
         const success = response.s !== undefined ? response.s : response.success;
         
@@ -318,7 +370,14 @@ export class Diffyne {
 
         const contentRoot = component.element.firstElementChild;
         if (contentRoot) {
-            this.patchApplier.applyPatches(contentRoot, patches);
+            try {
+                this.patchApplier.applyPatches(contentRoot, patches);
+            } catch (patchError) {
+                this.logger.error(`Failed to apply patches to ${componentId}:`, patchError);
+                // Fallback: re-render the component
+                this.fallbackRerender(componentId, componentData);
+                return;
+            }
         }
 
         if (state) {
@@ -467,6 +526,50 @@ export class Diffyne {
         }
         
         this.logger.log(`Registered ${Object.keys(eventListeners).length} event listeners for component ${componentId}`);
+    }
+
+    /**
+     * Cancel pending request for a component
+     */
+    cancelPendingRequest(componentId) {
+        const pending = this.pendingRequests.get(componentId);
+        if (pending && pending.controller) {
+            pending.controller.abort();
+            this.pendingRequests.delete(componentId);
+            this.logger.log(`Cancelled pending request for ${componentId}`);
+        }
+    }
+
+    /**
+     * Get next request ID for sequencing
+     */
+    getNextRequestId(componentId) {
+        const current = this.requestSequence.get(componentId) || 0;
+        const next = current + 1;
+        this.requestSequence.set(componentId, next);
+        return next;
+    }
+
+    /**
+     * Check if request is still valid (not superseded)
+     */
+    isRequestValid(componentId, requestId) {
+        const currentSequence = this.requestSequence.get(componentId) || 0;
+        return requestId >= currentSequence;
+    }
+
+    /**
+     * Fallback re-render when patch application fails
+     */
+    fallbackRerender(componentId, componentData) {
+        const component = this.registry.get(componentId);
+        if (!component) return;
+
+        this.logger.log(`Fallback: Re-rendering component ${componentId} due to patch failure`);
+        
+        // For now, just log the error - full re-render would require server support
+        // In production, we might want to reload the page or request a full HTML render
+        this.logger.error(`Patch application failed for ${componentId}. Consider using keys for list items.`);
     }
 }
 
