@@ -50,8 +50,18 @@ class StateSigner
         // Recursively normalize values
         foreach ($state as $key => $value) {
             if (is_array($value)) {
-                // Recursively normalize nested arrays
-                $state[$key] = self::normalizeState($value);
+                if (isset($value['__paginator']) && $value['__paginator'] === true) {
+                    ksort($value);
+                    if (isset($value['items']) && is_array($value['items'])) {
+                        if (array_keys($value['items']) !== range(0, count($value['items']) - 1)) {
+                            ksort($value['items']);
+                        }
+                    }
+                    $state[$key] = $value;
+                } else {
+                    // Recursively normalize nested arrays
+                    $state[$key] = self::normalizeState($value);
+                }
             }
             // Note: We keep null as null for now, as the real fix is to match
             // the initial component state types

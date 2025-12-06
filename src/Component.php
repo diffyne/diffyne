@@ -7,6 +7,7 @@ use Diffyne\Attributes\Invokable;
 use Diffyne\Attributes\Locked;
 use Diffyne\Attributes\On;
 use Diffyne\Attributes\QueryString;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
@@ -521,11 +522,51 @@ abstract class Component
 
         foreach ($this->tracked as $property) {
             if (! in_array($property, $this->hidden) && property_exists($this, $property)) {
-                $state[$property] = $this->$property;
+                $value = $this->$property;
+                if ($value instanceof LengthAwarePaginator) {
+                    $state[$property] = $this->serializePaginator($value);
+                } else {
+                    $state[$property] = $value;
+                }
             }
         }
 
         return $state;
+    }
+
+    /**
+     * Serialize a LengthAwarePaginator to an array.
+     *
+     * @return array<string, mixed>
+     */
+    protected function serializePaginator(LengthAwarePaginator $paginator): array
+    {
+        // Convert items to array if they're objects
+        $items = $paginator->items();
+        $itemsArray = [];
+        foreach ($items as $item) {
+            if (is_object($item)) {
+                if (method_exists($item, 'toArray')) {
+                    $itemsArray[] = $item->toArray();
+                } else {
+                    $itemsArray[] = (array) $item;
+                }
+            } else {
+                $itemsArray[] = $item;
+            }
+        }
+
+        return [
+            '__paginator' => true,
+            'current_page' => $paginator->currentPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+            'last_page' => $paginator->lastPage(),
+            'first_item' => $paginator->firstItem(),
+            'last_item' => $paginator->lastItem(),
+            'items' => $itemsArray,
+            'path' => $paginator->path(),
+        ];
     }
 
     /**
@@ -538,7 +579,11 @@ abstract class Component
         foreach ($state as $property => $value) {
             if (property_exists($this, $property) && ! in_array($property, $this->hidden)) {
                 try {
-                    $this->$property = $value;
+                    if (is_array($value) && isset($value['__paginator']) && $value['__paginator'] === true) {
+                        $this->$property = $this->deserializePaginator($value);
+                    } else {
+                        $this->$property = $value;
+                    }
                 } catch (TypeError $e) {
                     $reflection = new ReflectionProperty($this, $property);
                     $type = $reflection->getType();
@@ -559,6 +604,38 @@ abstract class Component
                 }
             }
         }
+    }
+
+    /**
+     * Deserialize an array back to a LengthAwarePaginator.
+     *
+     * @param array<string, mixed> $data
+     */
+    protected function deserializePaginator(array $data): LengthAwarePaginator
+    {
+        $items = $data['items'] ?? [];
+        $total = $data['total'] ?? 0;
+        $perPage = $data['per_page'] ?? 15;
+        $currentPage = $data['current_page'] ?? 1;
+        $path = $data['path'] ?? request()->url();
+
+        $items = array_map(function ($item) {
+            if (is_array($item)) {
+                return (object) $item;
+            }
+            return $item;
+        }, $items);
+
+        return new LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => $path,
+                'pageName' => 'page',
+            ]
+        );
     }
 
     /**

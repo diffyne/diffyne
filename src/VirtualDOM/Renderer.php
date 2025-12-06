@@ -6,6 +6,7 @@ use Diffyne\Component;
 use Diffyne\Security\StateSigner;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ViewErrorBag;
+use ReflectionClass;
 
 /**
  * Renderer for Diffyne components that generates Virtual DOM and patches.
@@ -133,7 +134,15 @@ class Renderer
                 // Empty strings become null in Laravel request input
                 $state[$key] = null;
             } elseif (is_array($value)) {
-                $state[$key] = $this->normalizeStateForSigning($value);
+                if (isset($value['__paginator']) && $value['__paginator'] === true) {
+                    ksort($value);
+                    if (isset($value['items']) && is_array($value['items'])) {
+                        $value['items'] = $value['items'];
+                    }
+                    $state[$key] = $value;
+                } else {
+                    $state[$key] = $this->normalizeStateForSigning($value);
+                }
             }
         }
 
@@ -152,14 +161,24 @@ class Renderer
         }
 
         // $view is guaranteed to be View instance at this point (from Component::render() return type)
-        // Pass component state and errors to the view
         $errorBag = new ViewErrorBag();
         $errorBag->put('default', $component->getErrorBag());
 
-        $data = array_merge(
-            $component->getState(),
-            ['errors' => $errorBag]
-        );
+        $reflection = new ReflectionClass($component);
+        $trackedProperty = $reflection->getProperty('tracked');
+        $hiddenProperty = $reflection->getProperty('hidden');
+
+        $tracked = $trackedProperty->getValue($component);
+        $hidden = $hiddenProperty->getValue($component);
+
+        $data = [];
+        foreach ($tracked as $property) {
+            if (! in_array($property, $hidden) && property_exists($component, $property)) {
+                $data[$property] = $component->$property;
+            }
+        }
+
+        $data['errors'] = $errorBag;
 
         return $view->with($data)->render();
     }
