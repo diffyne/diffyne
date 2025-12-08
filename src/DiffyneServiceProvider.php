@@ -109,9 +109,10 @@ class DiffyneServiceProvider extends ServiceProvider
             return "<?php echo view('diffyne::scripts'); ?>";
         });
 
-        // @diffyneStyles directive for including CSS (if needed)
+        // @diffyneStyles directive for including CSS and CSRF meta tag
         Blade::directive('diffyneStyles', function () {
-            return '<!-- Diffyne styles -->';
+            $csrfToken = csrf_token();
+            return "<meta name=\"csrf-token\" content=\"{$csrfToken}\">";
         });
     }
 

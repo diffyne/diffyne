@@ -62,8 +62,15 @@ return [
         // HMAC signing key for state verification (defaults to APP_KEY)
         'signing_key' => env('DIFFYNE_SIGNING_KEY'),
 
-        // Verify state signature on every request (recommended: true)
-        'verify_state' => env('DIFFYNE_VERIFY_STATE', true),
+        // Verify state signature on every request
+        // Options: 'strict' (verify all), 'property-updates' (only property updates), 'none' (disabled)
+        // Recommended: 'property-updates' for better UX while maintaining security
+        'verify_state' => env('DIFFYNE_VERIFY_STATE', 'property-updates'),
+
+        // Allow form submissions without strict signature verification
+        // When true, form submissions (call type) use lenient verification with reconstruction
+        // When false, form submissions require exact signature match
+        'lenient_form_verification' => env('DIFFYNE_LENIENT_FORMS', true),
 
         // Rate limiting for component updates (requests per minute)
         'rate_limit' => env('DIFFYNE_RATE_LIMIT', 60),

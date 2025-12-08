@@ -58,6 +58,17 @@ export class EventBinder {
      * Bind model events (input/change)
      */
     bindModelEvents(wrapper, componentId) {
+        // Helper to get the correct value based on input type
+        const getInputValue = (input) => {
+            if (input.type === 'checkbox') {
+                return input.checked;
+            } else if (input.type === 'radio') {
+                return input.checked ? input.value : undefined;
+            } else {
+                return input.value;
+            }
+        };
+
         // Input events
         wrapper.addEventListener('input', (e) => {
             const target = e.target;
@@ -66,10 +77,11 @@ export class EventBinder {
             if (modelAttr) {
                 const property = target.getAttribute(modelAttr.name);
                 const modifiers = this.parseModifiers(modelAttr.name, property);
+                const value = getInputValue(target);
                 
                 if (modifiers.live) {
                     if (!target._diffyneModelHandler) {
-                        let handler = (value) => this.modelHandler(componentId, modifiers.property, value);
+                        let handler = (val) => this.modelHandler(componentId, modifiers.property, val);
                         
                         if (modifiers.debounce) {
                             handler = debounce(handler, modifiers.debounce);
@@ -78,13 +90,13 @@ export class EventBinder {
                         target._diffyneModelHandler = handler;
                     }
                     
-                    target._diffyneModelHandler(target.value);
+                    target._diffyneModelHandler(value);
                 } else if (target.tagName !== 'SELECT' && 
                            target.type !== 'checkbox' && 
                            target.type !== 'radio') {
                     // Only update local state for text inputs that won't trigger server request on change
                     // SELECT, checkbox, radio always trigger server requests, so don't update local state
-                    this.localStateHandler(componentId, modifiers.property, target.value);
+                    this.localStateHandler(componentId, modifiers.property, value);
                 }
             }
         });
@@ -97,13 +109,19 @@ export class EventBinder {
             if (modelAttr) {
                 const property = target.getAttribute(modelAttr.name);
                 const modifiers = this.parseModifiers(modelAttr.name, property);
+                const value = getInputValue(target);
+                
+                // For radio buttons, only send update if checked
+                if (target.type === 'radio' && !target.checked) {
+                    return;
+                }
                 
                 if (modifiers.lazy || target.tagName === 'SELECT' || 
                     target.type === 'checkbox' || target.type === 'radio') {
-                    this.modelHandler(componentId, modifiers.property, target.value);
+                    this.modelHandler(componentId, modifiers.property, value);
                 } else if (!modifiers.live) {
                     // Update local state for non-live inputs on change
-                    this.localStateHandler(componentId, modifiers.property, target.value);
+                    this.localStateHandler(componentId, modifiers.property, value);
                 }
             }
         });

@@ -4,9 +4,11 @@ namespace Diffyne\WebSocket;
 
 use Diffyne\DiffyneManager;
 use Diffyne\Exceptions\RedirectException;
+use Diffyne\Security\StateSigner;
 use Diffyne\State\ComponentHydrator;
 use Diffyne\VirtualDOM\PatchSerializer;
 use Diffyne\VirtualDOM\Renderer;
+use Illuminate\Support\Facades\Log;
 use Sockeon\Sockeon\Controllers\SocketController;
 use Sockeon\Sockeon\WebSocket\Attributes\OnConnect;
 use Sockeon\Sockeon\WebSocket\Attributes\OnDisconnect;
@@ -68,6 +70,8 @@ class DiffyneController extends SocketController
             $params = $data['params'] ?? [];
             $state = $data['state'] ?? [];
             $fingerprint = $data['fingerprint'] ?? null;
+            $signature = $data['signature'] ?? null;
+            $componentId = $data['componentId'] ?? null;
 
             if (! $componentClass || ! $method) {
                 $this->emit($clientId, 'diffyne.error', [
@@ -76,6 +80,61 @@ class DiffyneController extends SocketController
                 ]);
 
                 return;
+            }
+
+            $verifyMode = config('diffyne.security.verify_state', 'property-updates');
+            $shouldVerify = match ($verifyMode) {
+                'strict', true, 'true' => true,
+                'property-updates' => false,
+                default => false,
+            };
+            
+            if ($shouldVerify) {
+                if (! $signature) {
+                    $this->emit($clientId, 'diffyne.error', [
+                        'error' => 'Missing state signature',
+                        'type' => 'validation_error',
+                    ]);
+                    return;
+                }
+
+                $signatureValid = StateSigner::verify($state, $componentId, $signature);
+                
+                if (! $signatureValid && config('diffyne.security.lenient_form_verification', true)) {
+                    $reconstructedState = $state;
+                    $reconstructedCount = 0;
+                    
+                    foreach ($reconstructedState as $key => $value) {
+                        if (is_string($value) && $value !== '') {
+                            $reconstructedState[$key] = null;
+                            $reconstructedCount++;
+                        } elseif (is_int($value) && $value !== 0) {
+                            $reconstructedState[$key] = 0;
+                            $reconstructedCount++;
+                        } elseif (is_bool($value) && $value === true) {
+                            $reconstructedState[$key] = false;
+                            $reconstructedCount++;
+                        }
+                    }
+                    
+                    if ($reconstructedCount > 0 && $reconstructedCount <= 20) {
+                        $reconstructedState = $this->normalizeStateForVerification($reconstructedState);
+                        $signatureValid = StateSigner::verify($reconstructedState, $componentId, $signature);
+                    }
+                }
+                
+                if (! $signatureValid) {
+                    Log::warning('Invalid state signature detected (WebSocket)', [
+                        'component_id' => $componentId,
+                        'client_id' => $clientId,
+                    ]);
+
+                    $this->emit($clientId, 'diffyne.error', [
+                        'error' => 'Invalid state signature. State may have been tampered with.',
+                        'type' => 'security_error',
+                    ]);
+                    return;
+                }
             }
 
             // Hydrate component from state
@@ -153,6 +212,8 @@ class DiffyneController extends SocketController
             $value = $data['value'] ?? null;
             $state = $data['state'] ?? [];
             $fingerprint = $data['fingerprint'] ?? null;
+            $signature = $data['signature'] ?? null;
+            $componentId = $data['componentId'] ?? null;
 
             if (! $componentClass || ! $property) {
                 $this->emit($clientId, 'diffyne.error', [
@@ -161,6 +222,36 @@ class DiffyneController extends SocketController
                 ]);
 
                 return;
+            }
+
+            $verifyMode = config('diffyne.security.verify_state', 'property-updates');
+            $shouldVerify = match ($verifyMode) {
+                'strict', true, 'true' => true,
+                'property-updates' => true,
+                default => false,
+            };
+            
+            if ($shouldVerify) {
+                if (! $signature) {
+                    $this->emit($clientId, 'diffyne.error', [
+                        'error' => 'Missing state signature',
+                        'type' => 'validation_error',
+                    ]);
+                    return;
+                }
+
+                if (! StateSigner::verify($state, $componentId, $signature)) {
+                    Log::warning('Invalid state signature detected (WebSocket)', [
+                        'component_id' => $componentId,
+                        'client_id' => $clientId,
+                    ]);
+
+                    $this->emit($clientId, 'diffyne.error', [
+                        'error' => 'Invalid state signature. State may have been tampered with.',
+                        'type' => 'security_error',
+                    ]);
+                    return;
+                }
             }
 
             // Hydrate component from state
@@ -224,6 +315,20 @@ class DiffyneController extends SocketController
                 'requestId' => $data['requestId'] ?? null,
             ]);
         }
+    }
+
+    protected function normalizeStateForVerification(array $state): array
+    {
+        foreach ($state as $key => $value) {
+            if ($value === '') {
+                $state[$key] = null;
+            } elseif (is_array($value)) {
+                $state[$key] = $this->normalizeStateForVerification($value);
+            }
+        }
+        
+        ksort($state);
+        return $state;
     }
 
     /**

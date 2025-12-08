@@ -10,6 +10,7 @@ export class Component {
         this.componentName = data.componentName;
         this.element = data.element;
         this.state = data.state || {};
+        this.serverState = JSON.parse(JSON.stringify(data.state || {}));
         this.fingerprint = data.fingerprint;
         this.signature = data.signature;
         this.vdom = data.vdom;

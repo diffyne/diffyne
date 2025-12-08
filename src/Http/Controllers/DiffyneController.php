@@ -59,8 +59,14 @@ class DiffyneController extends Controller
                 ], 400);
             }
 
-            // Verify state signature
-            if (config('diffyne.security.verify_state', true)) {
+            $verifyMode = config('diffyne.security.verify_state', 'property-updates');
+            $shouldVerify = match ($verifyMode) {
+                'strict', true, 'true' => true,
+                'property-updates' => ($type === 'update'),
+                default => false,
+            };
+            
+            if ($shouldVerify) {
                 if (! $signature) {
                     return response()->json([
                         'success' => false,
@@ -68,12 +74,36 @@ class DiffyneController extends Controller
                     ], 400);
                 }
 
-                // State comes from request with empty strings as null (Laravel behavior)
-                // Signature was generated with empty strings as null, so they match
-                if (! StateSigner::verify($state, $componentId, $signature)) {
+                $signatureValid = StateSigner::verify($state, $componentId, $signature);
+                
+                if (! $signatureValid && $type === 'call' && config('diffyne.security.lenient_form_verification', true)) {
+                    $reconstructedState = $state;
+                    $reconstructedCount = 0;
+                    
+                    foreach ($reconstructedState as $key => $value) {
+                        if (is_string($value) && $value !== '') {
+                            $reconstructedState[$key] = null;
+                            $reconstructedCount++;
+                        } elseif (is_int($value) && $value !== 0) {
+                            $reconstructedState[$key] = 0;
+                            $reconstructedCount++;
+                        } elseif (is_bool($value) && $value === true) {
+                            $reconstructedState[$key] = false;
+                            $reconstructedCount++;
+                        }
+                    }
+                    
+                    if ($reconstructedCount > 0 && $reconstructedCount <= 20) {
+                        $reconstructedState = $this->normalizeStateForVerification($reconstructedState);
+                        $signatureValid = StateSigner::verify($reconstructedState, $componentId, $signature);
+                    }
+                }
+                
+                if (! $signatureValid) {
                     Log::warning('Invalid state signature detected', [
                         'component_id' => $componentId,
                         'ip' => $request->ip(),
+                        'type' => $type,
                     ]);
 
                     return response()->json([
@@ -205,6 +235,20 @@ class DiffyneController extends Controller
                 'type' => 'server_error',
             ], 500);
         }
+    }
+
+    protected function normalizeStateForVerification(array $state): array
+    {
+        foreach ($state as $key => $value) {
+            if ($value === '') {
+                $state[$key] = null;
+            } elseif (is_array($value)) {
+                $state[$key] = $this->normalizeStateForVerification($value);
+            }
+        }
+        
+        ksort($state);
+        return $state;
     }
 
     /**

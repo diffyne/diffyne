@@ -117,6 +117,11 @@ export class Diffyne {
             signature,
             vdom: this.vNodeConverter.buildVDOM(element),
         });
+        
+        const component = this.registry.get(id);
+        if (component) {
+            component.serverState = JSON.parse(JSON.stringify(state));
+        }
 
         this.modelSync.sync(element, state);
         this.eventBinder.bind(element, id);
@@ -174,6 +179,11 @@ export class Diffyne {
                     fingerprint: data.fingerprint,
                     vdom: this.vNodeConverter.buildVDOM(element),
                 });
+                
+                const lazyComponent = this.registry.get(id);
+                if (lazyComponent) {
+                    lazyComponent.serverState = JSON.parse(JSON.stringify(data.state));
+                }
 
                 this.modelSync.sync(element, data.state);
                 this.eventBinder.bind(element, id);
@@ -238,6 +248,8 @@ export class Diffyne {
 
         this.loadingService.show(component.element);
 
+        const currentState = JSON.parse(JSON.stringify(component.state));
+
         // Create abort controller for request cancellation
         const abortController = new AbortController();
         const requestId = this.getNextRequestId(componentId);
@@ -254,14 +266,14 @@ export class Diffyne {
                 componentClass: component.componentClass,
                 method,
                 params,
-                state: component.state,
+                state: currentState,
                 fingerprint: component.fingerprint,
                 signature: component.signature
             });
 
             // Check if this request is still valid (not superseded)
             if (this.isRequestValid(componentId, requestId)) {
-                this.processResponse(componentId, response, requestId);
+                this.processResponse(componentId, response, requestId, 'call');
             }
         } catch (error) {
             // Only handle error if request wasn't cancelled
@@ -287,9 +299,11 @@ export class Diffyne {
         // Cancel any pending requests for this component
         this.cancelPendingRequest(componentId);
 
-        // Store the original state and signature before any updates
-        const originalState = { ...component.state };
-        const originalSignature = component.signature;
+        const serverState = component.serverState || component.state;
+        const serverSignature = component.signature;
+
+        // Store the property being updated so we can preserve local changes for other properties
+        const updatingProperty = property;
 
         // Create abort controller for request cancellation
         const abortController = new AbortController();
@@ -297,25 +311,25 @@ export class Diffyne {
         
         this.pendingRequests.set(componentId, {
             controller: abortController,
-            requestId: requestId
+            requestId: requestId,
+            updatingProperty: updatingProperty // Track which property is being updated
         });
 
         try {
-            // Send request with ORIGINAL state (before optimistic update)
             const response = await this.transport.send({
                 type: 'update',
                 componentId,
                 componentClass: component.componentClass,
                 property,
                 value,
-                state: originalState, // Original state
+                state: serverState,
                 fingerprint: component.fingerprint,
-                signature: originalSignature // Original signature matches original state
+                signature: serverSignature
             });
 
             // Check if this request is still valid (not superseded)
             if (this.isRequestValid(componentId, requestId)) {
-                this.processResponse(componentId, response, requestId);
+                this.processResponse(componentId, response, requestId, 'update', updatingProperty);
             }
         } catch (error) {
             // Only handle error if request wasn't cancelled
@@ -330,7 +344,7 @@ export class Diffyne {
     /**
      * Process server response
      */
-    processResponse(componentId, response, requestId = null) {
+    processResponse(componentId, response, requestId = null, requestType = 'call', updatedProperty = null) {
         const component = this.registry.get(componentId);
         if (!component) return;
 
@@ -381,8 +395,32 @@ export class Diffyne {
         }
 
         if (state) {
-            component.updateState(state);
-            this.modelSync.sync(component.element, state);
+            if (requestType === 'update' && updatedProperty) {
+                const mergedState = { ...component.state };
+                if (state.hasOwnProperty(updatedProperty)) {
+                    mergedState[updatedProperty] = state[updatedProperty];
+                }
+                component.updateState(mergedState);
+                component.serverState = JSON.parse(JSON.stringify(state));
+                
+                const propertyValue = state[updatedProperty];
+                if (propertyValue !== undefined) {
+                    const modelInputs = this.modelSync.findModelInputs(component.element);
+                    modelInputs.forEach(input => {
+                        const modelAttr = this.modelSync.findModelAttribute(input);
+                        if (modelAttr) {
+                            const property = input.getAttribute(modelAttr.name);
+                            if (property === updatedProperty) {
+                                this.modelSync.syncInput(input, propertyValue);
+                            }
+                        }
+                    });
+                }
+            } else {
+                component.updateState(state);
+                component.serverState = JSON.parse(JSON.stringify(state));
+                this.modelSync.sync(component.element, state);
+            }
         }
         
         if (fingerprint) {
