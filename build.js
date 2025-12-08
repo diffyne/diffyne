@@ -11,7 +11,7 @@ const buildOptions = {
     bundle: true,
     format: 'iife',
     globalName: 'Diffyne',
-    outfile: 'public/js/diffyne.js',
+    outfile: 'resources/dist/js/diffyne.js',
     platform: 'browser',
     target: 'es2020',
     logLevel: 'info',
@@ -28,7 +28,7 @@ async function build() {
         console.log('✨ Minifying with Terser...');
         
         // Read the built file
-        const code = readFileSync('public/js/diffyne.js', 'utf8');
+        const code = readFileSync('resources/dist/js/diffyne.js', 'utf8');
         
         // Minify with Terser
         const minified = await minify(code, {
@@ -47,7 +47,7 @@ async function build() {
         });
         
         // Write minified output
-        writeFileSync('public/js/diffyne.js', minified.code);
+        writeFileSync('resources/dist/js/diffyne.js', minified.code);
         
         // Get file size
         const size = Buffer.byteLength(minified.code, 'utf8');
@@ -72,7 +72,7 @@ if (watch) {
                 build.onEnd(async (result) => {
                     if (result.errors.length === 0) {
                         console.log('✨ Minifying with Terser...');
-                        const code = readFileSync('public/js/diffyne.js', 'utf8');
+                        const code = readFileSync('resources/dist/js/diffyne.js', 'utf8');
                         const minified = await minify(code, {
                             compress: {
                                 drop_console: false,
@@ -87,7 +87,7 @@ if (watch) {
                                 comments: false,
                             },
                         });
-                        writeFileSync('public/js/diffyne.js', minified.code);
+                        writeFileSync('resources/dist/js/diffyne.js', minified.code);
                         
                         // Publish to public vendor directory
                         try {

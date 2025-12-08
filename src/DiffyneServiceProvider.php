@@ -51,7 +51,7 @@ class DiffyneServiceProvider extends ServiceProvider
 
         // Publish JavaScript assets
         $this->publishes([
-            __DIR__.'/../public/js/diffyne.js' => public_path('vendor/diffyne/diffyne.js'),
+            __DIR__.'/../resources/dist/js/diffyne.js' => public_path('vendor/diffyne/diffyne.js'),
         ], 'diffyne-assets');
 
         // Publish views
