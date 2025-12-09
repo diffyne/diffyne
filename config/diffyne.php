@@ -34,7 +34,7 @@ return [
         'cors' => [
             'allowed_origins' => explode(',', env('DIFFYNE_WS_CORS_ORIGINS', '*')),
             'allowed_methods' => ['GET', 'POST', 'OPTIONS'],
-            'allowed_headers' => ['Content-Type', 'Authorization', 'X-CSRF-TOKEN'],
+            'allowed_headers' => ['Content-Type', 'Authorization'],
         ],
     ],
 
@@ -147,6 +147,35 @@ return [
         'max_request_size' => 512 * 1024, // 512KB max request
         'enable_compression' => env('DIFFYNE_COMPRESSION', true),
         'snapshot_cache_size' => 100, // Max components to cache snapshots for
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Upload Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for file upload handling in Diffyne components.
+    | Files are stored temporarily and can be moved to permanent storage
+    | using the moveTemporaryFile() method in your components.
+    |
+    */
+
+    'file_upload' => [
+        // Storage disk for temporary files
+        'disk' => env('DIFFYNE_FILE_DISK', 'local'),
+
+        // Path for temporary file storage (relative to disk root)
+        'temporary_path' => env('DIFFYNE_FILE_TEMP_PATH', 'diffyne/temp'),
+
+        // Maximum file size in KB (default: 12MB)
+        'max_size' => env('DIFFYNE_FILE_MAX_SIZE', 12288),
+
+        // Allowed MIME types (null = all types allowed)
+        // Example: ['image/jpeg', 'image/png', 'image/gif']
+        'allowed_mimes' => env('DIFFYNE_FILE_MIMES') ? explode(',', env('DIFFYNE_FILE_MIMES')) : null,
+
+        // Cleanup temporary files older than this many hours
+        'cleanup_after_hours' => env('DIFFYNE_FILE_CLEANUP_HOURS', 24),
     ],
 
 ];

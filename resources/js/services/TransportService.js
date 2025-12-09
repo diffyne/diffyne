@@ -38,12 +38,11 @@ export class TransportService {
      * Send AJAX request
      */
     async sendAjax(payload) {
-        const response = await fetch(this.config.endpoint, {
+        const response = await fetch(`${this.config.endpoint}/update`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': getCsrfToken()
             },
             body: JSON.stringify(payload)
         });
@@ -195,7 +194,6 @@ export class TransportService {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCsrfToken(),
                 'Accept': 'application/json',
             },
             body: JSON.stringify({

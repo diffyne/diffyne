@@ -284,6 +284,11 @@ export class PatchApplier {
                  element.tagName === 'SELECT') && key === 'value') {
                 element.value = value;
             }
+            
+            // Handle checkbox checked attribute
+            if (element.tagName === 'INPUT' && element.type === 'checkbox' && key === 'checked') {
+                element.checked = true;
+            }
         });
 
         removeAttrs.forEach(key => {
@@ -292,6 +297,11 @@ export class PatchApplier {
             if ((element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || 
                  element.tagName === 'SELECT') && key === 'value') {
                 element.value = '';
+            }
+            
+            // Handle checkbox checked attribute removal
+            if (element.tagName === 'INPUT' && element.type === 'checkbox' && key === 'checked') {
+                element.checked = false;
             }
         });
     }

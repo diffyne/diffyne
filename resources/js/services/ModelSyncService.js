@@ -11,6 +11,11 @@ export class ModelSyncService {
         const modelInputs = this.findModelInputs(element);
         
         modelInputs.forEach(input => {
+            // Skip file inputs
+            if (input.type === 'file') {
+                return;
+            }
+            
             const modelAttr = this.findModelAttribute(input);
             if (!modelAttr) return;
             
@@ -48,21 +53,23 @@ export class ModelSyncService {
      * Sync single input value
      */
     syncInput(input, value) {
+        // Skip file inputs - can't be set programmatically
+        if (input.type === 'file') {
+            return;
+        }
+        
         if (input.tagName === 'INPUT') {
             if (input.type === 'checkbox') {
-                // For checkboxes, value is boolean
                 const checked = Boolean(value);
                 if (input.checked !== checked) {
                     input.checked = checked;
                 }
             } else if (input.type === 'radio') {
-                // For radio buttons, check if this input's value matches the state value
                 const checked = input.value === String(value);
                 if (input.checked !== checked) {
                     input.checked = checked;
                 }
             } else {
-                // For text inputs, textarea, etc.
                 const normalizedValue = value ?? '';
                 if (input.value !== normalizedValue) {
                     input.value = normalizedValue;

@@ -5,6 +5,7 @@ namespace Diffyne\Http\Controllers;
 use BadMethodCallException;
 use Diffyne\DiffyneManager;
 use Diffyne\Exceptions\RedirectException;
+use Diffyne\FileUpload\FileUploadService;
 use Diffyne\Security\StateSigner;
 use Diffyne\State\ComponentHydrator;
 use Diffyne\VirtualDOM\PatchSerializer;
@@ -12,8 +13,11 @@ use Diffyne\VirtualDOM\Renderer;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
@@ -337,10 +341,6 @@ class DiffyneController extends Controller
     /**
      * Health check endpoint.
      */
-
-    /**
-     * Health check endpoint.
-     */
     public function health(): JsonResponse
     {
         return response()->json([
@@ -348,5 +348,129 @@ class DiffyneController extends Controller
             'version' => '1.0.0',
             'transport' => config('diffyne.transport', 'ajax'),
         ]);
+    }
+
+    /**
+     * Handle file upload.
+     */
+    public function upload(Request $request): JsonResponse
+    {
+        try {
+            $componentId = $request->input('componentId');
+            $property = $request->input('property');
+
+            if (! $request->hasFile('file')) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'No file uploaded',
+                ], 400);
+            }
+
+            $file = $request->file('file');
+
+            if (is_array($file)) {
+                $file = $file[0] ?? null;
+            }
+
+            if (! $componentId || ! $property || ! $file instanceof UploadedFile) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Missing required parameters',
+                    'debug' => [
+                        'has_componentId' => ! empty($componentId),
+                        'has_property' => ! empty($property),
+                        'has_file' => $file instanceof UploadedFile,
+                    ],
+                ], 400);
+            }
+
+            if (! $file->isValid()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Invalid file upload',
+                    'error_code' => $file->getError(),
+                ], 400);
+            }
+
+            $maxSize = config('diffyne.file_upload.max_size', 12288);
+            if ($file->getSize() > $maxSize * 1024) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'File too large',
+                ], 422);
+            }
+
+            $allowedMimes = config('diffyne.file_upload.allowed_mimes');
+            if ($allowedMimes !== null && is_array($allowedMimes) && count($allowedMimes) > 0) {
+                $mimeType = $file->getMimeType();
+                if (! in_array($mimeType, $allowedMimes, true)) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'File type not allowed',
+                        'allowed_types' => $allowedMimes,
+                    ], 422);
+                }
+            }
+
+            $service = app(FileUploadService::class);
+            $identifier = $service->storeTemporary($file, $componentId);
+
+            return response()->json([
+                'success' => true,
+                'identifier' => $identifier,
+                'filename' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('File upload error: '.$e->getMessage(), [
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Upload failed: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Preview temporary file.
+     */
+    public function preview(Request $request): Response
+    {
+        $id = $request->query('id', '');
+        $identifier = is_string($id) ? urldecode($id) : '';
+
+        if (! $identifier) {
+            abort(404);
+        }
+
+        $service = app(FileUploadService::class);
+        $path = $service->getTemporaryPath($identifier);
+
+        if (! $path) {
+            abort(404);
+        }
+
+        $disk = config('diffyne.file_upload.disk', 'local');
+        $content = Storage::disk($disk)->get($path);
+
+        if (! $content) {
+            abort(404);
+        }
+
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $mimeType = match(strtolower($extension)) {
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            default => 'application/octet-stream',
+        };
+
+        return response($content, 200)
+            ->header('Content-Type', $mimeType)
+            ->header('Cache-Control', 'private, max-age=3600');
     }
 }

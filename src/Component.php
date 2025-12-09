@@ -7,6 +7,7 @@ use Diffyne\Attributes\Invokable;
 use Diffyne\Attributes\Locked;
 use Diffyne\Attributes\On;
 use Diffyne\Attributes\QueryString;
+use Diffyne\FileUpload\FileUploadService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
@@ -304,6 +305,15 @@ abstract class Component
         }
 
         $this->updating($property, $value);
+
+        $reflection = new ReflectionProperty($this, $property);
+        $type = $reflection->getType();
+
+        if ($type instanceof ReflectionNamedType && $type->getName() === 'array') {
+            if (! is_array($value)) {
+                $value = $value !== null ? [$value] : [];
+            }
+        }
 
         $this->$property = $value;
 
@@ -860,6 +870,64 @@ abstract class Component
     {
         $this->dispatchedEvents = [];
         $this->browserEvents = [];
+    }
+
+    /**
+     * Get preview URL for temporary file.
+     * This is a public method that can be called from Blade views.
+     */
+    public function getTemporaryFilePreviewUrl(string $identifier): string
+    {
+        return route('diffyne.preview', ['id' => $identifier]);
+    }
+
+    /**
+     * Move temporary file to permanent storage.
+     *
+     * @param string $identifier Temporary file identifier (from upload)
+     * @param string $destinationPath Destination path (e.g., 'avatars/user-123.jpg')
+     * @param string|null $disk Storage disk (defaults to config)
+     * @param bool $useOriginalName If true, uses the original filename instead of destinationPath filename
+     * @return string|null Permanent file path or null on failure
+     */
+    protected function moveTemporaryFile(string $identifier, string $destinationPath, ?string $disk = null, bool $useOriginalName = false): ?string
+    {
+        $service = app(FileUploadService::class);
+
+        return $service->moveToPermanent($identifier, $destinationPath, $disk, $useOriginalName);
+    }
+
+    /**
+     * Get the original filename for a temporary file.
+     */
+    public function getTemporaryFileOriginalName(string $identifier): ?string
+    {
+        $service = app(FileUploadService::class);
+
+        return $service->getTemporaryFileOriginalName($identifier);
+    }
+
+    /**
+     * Delete temporary file.
+     */
+    protected function deleteTemporaryFile(string $identifier): bool
+    {
+        $service = app(FileUploadService::class);
+
+        return $service->deleteTemporary($identifier);
+    }
+
+    /**
+     * Cleanup old temporary files.
+     * This is a static method that can be called from anywhere.
+     *
+     * @return int Number of files deleted
+     */
+    public static function cleanupTemporaryFiles(): int
+    {
+        $service = app(FileUploadService::class);
+
+        return $service->cleanupOldFiles();
     }
 
     /**
