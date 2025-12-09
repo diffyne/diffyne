@@ -308,7 +308,7 @@ abstract class Component
 
         $reflection = new ReflectionProperty($this, $property);
         $type = $reflection->getType();
-        
+
         if ($type instanceof ReflectionNamedType && $type->getName() === 'array') {
             if (! is_array($value)) {
                 $value = $value !== null ? [$value] : [];
@@ -892,6 +892,7 @@ abstract class Component
     protected function moveTemporaryFile(string $identifier, string $destinationPath, ?string $disk = null): ?string
     {
         $service = app(FileUploadService::class);
+
         return $service->moveToPermanent($identifier, $destinationPath, $disk);
     }
 
@@ -901,6 +902,7 @@ abstract class Component
     protected function deleteTemporaryFile(string $identifier): bool
     {
         $service = app(FileUploadService::class);
+
         return $service->deleteTemporary($identifier);
     }
 
@@ -913,6 +915,7 @@ abstract class Component
     public static function cleanupTemporaryFiles(): int
     {
         $service = app(FileUploadService::class);
+
         return $service->cleanupOldFiles();
     }
 

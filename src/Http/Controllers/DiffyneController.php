@@ -13,6 +13,8 @@ use Diffyne\VirtualDOM\Renderer;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -356,28 +358,32 @@ class DiffyneController extends Controller
         try {
             $componentId = $request->input('componentId');
             $property = $request->input('property');
-            
+
             if (! $request->hasFile('file')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'No file uploaded',
                 ], 400);
             }
-            
+
             $file = $request->file('file');
 
-            if (! $componentId || ! $property || ! $file) {
+            if (is_array($file)) {
+                $file = $file[0] ?? null;
+            }
+
+            if (! $componentId || ! $property || ! $file instanceof UploadedFile) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Missing required parameters',
                     'debug' => [
-                        'has_componentId' => !empty($componentId),
-                        'has_property' => !empty($property),
-                        'has_file' => $file !== null,
+                        'has_componentId' => ! empty($componentId),
+                        'has_property' => ! empty($property),
+                        'has_file' => $file instanceof UploadedFile,
                     ],
                 ], 400);
             }
-            
+
             if (! $file->isValid()) {
                 return response()->json([
                     'success' => false,
@@ -420,6 +426,7 @@ class DiffyneController extends Controller
                 'exception' => get_class($e),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json([
                 'success' => false,
                 'error' => 'Upload failed: '.$e->getMessage(),
@@ -430,10 +437,11 @@ class DiffyneController extends Controller
     /**
      * Preview temporary file.
      */
-    public function preview(Request $request): \Illuminate\Http\Response
+    public function preview(Request $request): Response
     {
-        $identifier = urldecode($request->query('id', ''));
-        
+        $id = $request->query('id', '');
+        $identifier = is_string($id) ? urldecode($id) : '';
+
         if (! $identifier) {
             abort(404);
         }

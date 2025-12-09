@@ -39,4 +39,3 @@ class CleanupTemporaryFilesCommand extends Command
         return Command::SUCCESS;
     }
 }
-
