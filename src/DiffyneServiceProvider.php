@@ -2,11 +2,13 @@
 
 namespace Diffyne;
 
+use Diffyne\Console\Commands\CleanupTemporaryFilesCommand;
 use Diffyne\Console\Commands\DiffyneInstallCommand;
 use Diffyne\Console\Commands\DiffyneWebSocketCommand;
 use Diffyne\Console\Commands\MakeDiffyneCommand;
 use Diffyne\State\ComponentHydrator;
 use Diffyne\VirtualDOM\Renderer;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -74,8 +76,24 @@ class DiffyneServiceProvider extends ServiceProvider
                 MakeDiffyneCommand::class,
                 DiffyneInstallCommand::class,
                 DiffyneWebSocketCommand::class,
+                CleanupTemporaryFilesCommand::class,
             ]);
+
+            $this->registerScheduledTasks();
         }
+    }
+
+    /**
+     * Register scheduled tasks.
+     */
+    protected function registerScheduledTasks(): void
+    {
+        $this->app->afterResolving(Schedule::class, function (Schedule $schedule) {
+            $schedule->command('diffyne:cleanup-files')
+                ->daily()
+                ->withoutOverlapping()
+                ->runInBackground();
+        });
     }
 
     /**

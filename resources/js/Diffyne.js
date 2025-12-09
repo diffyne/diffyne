@@ -12,6 +12,7 @@ import { LoadingService } from './services/LoadingService.js';
 import { ErrorService } from './services/ErrorService.js';
 import { ModelSyncService } from './services/ModelSyncService.js';
 import { EventManager } from './services/EventManager.js';
+import { FileUploadService } from './services/FileUploadService.js';
 import { parseJSON, parseAction, updateQueryString, getQueryParams, Logger } from './utils/helpers.js';
 
 export class Diffyne {
@@ -35,6 +36,7 @@ export class Diffyne {
         this.errorService = new ErrorService();
         this.modelSync = new ModelSyncService();
         this.eventManager = new EventManager(this.registry, this.logger);
+        this.fileUpload = new FileUploadService(this.config);
         
         // Request tracking for cancellation and sequencing
         this.pendingRequests = new Map();
@@ -44,7 +46,8 @@ export class Diffyne {
         this.eventBinder = new EventBinder(
             (id, action, event) => this.handleAction(id, action, event),
             (id, property, value) => this.handleModelUpdate(id, property, value),
-            (id, property, value) => this.updateLocalState(id, property, value)
+            (id, property, value) => this.updateLocalState(id, property, value),
+            (id, property, file, isMultiple) => this.handleFileUpload(id, property, file, isMultiple)
         );
 
         this.init();
@@ -235,6 +238,56 @@ export class Diffyne {
     }
 
     /**
+     * Handle file upload
+     */
+    async handleFileUpload(componentId, property, fileOrFiles, isMultiple = false) {
+        const component = this.registry.get(componentId);
+        if (!component) return;
+
+        try {
+            this.loadingService.show(component.element);
+            
+            if (isMultiple && Array.isArray(fileOrFiles)) {
+                const identifiers = [];
+                for (const file of fileOrFiles) {
+                    try {
+                        const result = await this.fileUpload.uploadFile(file, componentId, property);
+                        if (result.success) {
+                            identifiers.push(result.identifier);
+                        }
+                    } catch (error) {
+                        this.logger.error(`Failed to upload file ${file.name}:`, error);
+                    }
+                }
+                
+                if (identifiers.length > 0) {
+                    const currentValue = component.state[property];
+                    const existing = Array.isArray(currentValue) ? currentValue : [];
+                    await this.updateProperty(componentId, property, [...existing, ...identifiers]);
+                }
+            } 
+            else if (!isMultiple) {
+                const result = await this.fileUpload.uploadFile(fileOrFiles, componentId, property);
+                
+                if (result.success) {
+                    const currentValue = component.state[property];
+                    if (Array.isArray(currentValue)) {
+                        await this.updateProperty(componentId, property, [...currentValue, result.identifier]);
+                    } else {
+                        await this.updateProperty(componentId, property, result.identifier);
+                    }
+                }
+            }
+        } catch (error) {
+            this.errorService.display(component.element, {
+                [property]: [error.message || 'Upload failed']
+            });
+        } finally {
+            this.loadingService.hide(component.element);
+        }
+    }
+
+    /**
      * Call component method
      */
     async callMethod(componentId, method, params = []) {
@@ -407,6 +460,10 @@ export class Diffyne {
                 if (propertyValue !== undefined) {
                     const modelInputs = this.modelSync.findModelInputs(component.element);
                     modelInputs.forEach(input => {
+                        if (input.type === 'file') {
+                            return;
+                        }
+                        
                         const modelAttr = this.modelSync.findModelAttribute(input);
                         if (modelAttr) {
                             const property = input.getAttribute(modelAttr.name);

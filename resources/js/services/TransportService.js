@@ -38,7 +38,7 @@ export class TransportService {
      * Send AJAX request
      */
     async sendAjax(payload) {
-        const response = await fetch(this.config.endpoint, {
+        const response = await fetch(`${this.config.endpoint}/update`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

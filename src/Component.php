@@ -7,6 +7,7 @@ use Diffyne\Attributes\Invokable;
 use Diffyne\Attributes\Locked;
 use Diffyne\Attributes\On;
 use Diffyne\Attributes\QueryString;
+use Diffyne\FileUpload\FileUploadService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
@@ -304,6 +305,15 @@ abstract class Component
         }
 
         $this->updating($property, $value);
+
+        $reflection = new ReflectionProperty($this, $property);
+        $type = $reflection->getType();
+        
+        if ($type instanceof ReflectionNamedType && $type->getName() === 'array') {
+            if (! is_array($value)) {
+                $value = $value !== null ? [$value] : [];
+            }
+        }
 
         $this->$property = $value;
 
@@ -860,6 +870,49 @@ abstract class Component
     {
         $this->dispatchedEvents = [];
         $this->browserEvents = [];
+    }
+
+    /**
+     * Get preview URL for temporary file.
+     */
+    protected function getTemporaryFilePreviewUrl(string $identifier): string
+    {
+        return route('diffyne.preview', ['id' => $identifier]);
+    }
+
+    /**
+     * Move temporary file to permanent storage.
+     *
+     * @param string $identifier Temporary file identifier (from upload)
+     * @param string $destinationPath Destination path (e.g., 'avatars/user-123.jpg')
+     * @param string|null $disk Storage disk (defaults to config)
+     * @return string|null Permanent file path or null on failure
+     */
+    protected function moveTemporaryFile(string $identifier, string $destinationPath, ?string $disk = null): ?string
+    {
+        $service = app(FileUploadService::class);
+        return $service->moveToPermanent($identifier, $destinationPath, $disk);
+    }
+
+    /**
+     * Delete temporary file.
+     */
+    protected function deleteTemporaryFile(string $identifier): bool
+    {
+        $service = app(FileUploadService::class);
+        return $service->deleteTemporary($identifier);
+    }
+
+    /**
+     * Cleanup old temporary files.
+     * This is a static method that can be called from anywhere.
+     *
+     * @return int Number of files deleted
+     */
+    public static function cleanupTemporaryFiles(): int
+    {
+        $service = app(FileUploadService::class);
+        return $service->cleanupOldFiles();
     }
 
     /**

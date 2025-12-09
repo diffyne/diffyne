@@ -6,10 +6,11 @@
 import { debounce } from '../utils/helpers.js';
 
 export class EventBinder {
-    constructor(actionHandler, modelHandler, localStateHandler) {
+    constructor(actionHandler, modelHandler, localStateHandler, fileUploadHandler) {
         this.actionHandler = actionHandler;
         this.modelHandler = modelHandler;
         this.localStateHandler = localStateHandler;
+        this.fileUploadHandler = fileUploadHandler;
     }
 
     /**
@@ -24,6 +25,7 @@ export class EventBinder {
         this.bindClickEvents(element, componentId);
         this.bindChangeEvents(element, componentId);
         this.bindModelEvents(element, componentId);
+        this.bindFileEvents(element, componentId);
         this.bindSubmitEvents(element, componentId);
         this.bindPollEvents(element, componentId);
     }
@@ -104,6 +106,12 @@ export class EventBinder {
         // Change events
         wrapper.addEventListener('change', (e) => {
             const target = e.target;
+            
+            // Skip file inputs - handled by bindFileEvents
+            if (target.type === 'file') {
+                return;
+            }
+            
             const modelAttr = this.findModelAttribute(target);
             
             if (modelAttr) {
@@ -122,6 +130,39 @@ export class EventBinder {
                 } else if (!modifiers.live) {
                     // Update local state for non-live inputs on change
                     this.localStateHandler(componentId, modifiers.property, value);
+                }
+            }
+        });
+    }
+
+    /**
+     * Bind file upload events
+     */
+    bindFileEvents(wrapper, componentId) {
+        wrapper.addEventListener('change', (e) => {
+            const target = e.target;
+            if (target.type !== 'file') return;
+            
+            const modelAttr = this.findModelAttribute(target);
+            if (!modelAttr || !this.fileUploadHandler) return;
+            
+            const property = target.getAttribute(modelAttr.name);
+            const modifiers = this.parseModifiers(modelAttr.name, property);
+            const files = target.files;
+            
+            if (files && files.length > 0) {
+                const isMultiple = target.multiple;
+                
+                if (isMultiple) {
+                    const validFiles = Array.from(files).filter(file => file && file.size > 0);
+                    if (validFiles.length > 0) {
+                        this.fileUploadHandler(componentId, modifiers.property, validFiles, true);
+                    }
+                } else if (files.length === 1) {
+                    const file = files[0];
+                    if (file && file.size > 0) {
+                        this.fileUploadHandler(componentId, modifiers.property, file, false);
+                    }
                 }
             }
         });
