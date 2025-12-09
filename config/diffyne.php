@@ -34,7 +34,7 @@ return [
         'cors' => [
             'allowed_origins' => explode(',', env('DIFFYNE_WS_CORS_ORIGINS', '*')),
             'allowed_methods' => ['GET', 'POST', 'OPTIONS'],
-            'allowed_headers' => ['Content-Type', 'Authorization', 'X-CSRF-TOKEN'],
+            'allowed_headers' => ['Content-Type', 'Authorization'],
         ],
     ],
 

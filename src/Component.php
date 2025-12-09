@@ -874,8 +874,9 @@ abstract class Component
 
     /**
      * Get preview URL for temporary file.
+     * This is a public method that can be called from Blade views.
      */
-    protected function getTemporaryFilePreviewUrl(string $identifier): string
+    public function getTemporaryFilePreviewUrl(string $identifier): string
     {
         return route('diffyne.preview', ['id' => $identifier]);
     }

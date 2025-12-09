@@ -179,6 +179,7 @@ class Renderer
         }
 
         $data['errors'] = $errorBag;
+        $data['component'] = $component; // Make component instance available in view
 
         return $view->with($data)->render();
     }
